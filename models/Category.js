@@ -4,26 +4,6 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  categoryLogo: {
-    url: {
-      type: String,
-      require: true,
-    },
-    publicId: {
-      type: String,
-      require: true,
-    }
-  },
-  categoryImg: {
-    url: {
-      type: String,
-      require: true,
-    },
-    publicId: {
-      type: String,
-      require: true,
-    }
-  },
   isActive: {
     type: String,
     default: true,
