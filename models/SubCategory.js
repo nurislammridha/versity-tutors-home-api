@@ -14,7 +14,7 @@ const SubCategorySchema = new mongoose.Schema({
     ref: 'Category'
   },
   isActive: {
-    type: String,
+    type: Boolean,
     default: true,
   },
 });

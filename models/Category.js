@@ -5,7 +5,7 @@ const CategorySchema = new mongoose.Schema({
     require: true,
   },
   isActive: {
-    type: String,
+    type: Boolean,
     default: true,
   },
 });
