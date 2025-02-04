@@ -1,0 +1,14 @@
+const express = require("express");
+const router = express.Router();
+const adminAuth = require('../middleware/adminAuthMiddleware');
+const { createSubDistrict, subDistrictById, updateSubDistrict, deleteSubDistrict, allSubDistricts, subDistrictByDivision, subDistrictByDistrict } = require("../controllers/subDistrictController");
+
+router.route('/').post(adminAuth, createSubDistrict)
+router.route('/').get(allSubDistricts)
+router.route('/:id').get(subDistrictById)
+router.route('/by-district/:id').get(adminAuth, subDistrictByDistrict)
+router.route('/by-division/:id').get(adminAuth, subDistrictByDivision)
+router.route('/:id').put(adminAuth, updateSubDistrict)
+router.route('/:id').delete(adminAuth, deleteSubDistrict)
+
+module.exports = router;
