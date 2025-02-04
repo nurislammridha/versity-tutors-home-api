@@ -23,6 +23,7 @@ app.use("/v1/category", require("./routes/category"));
 // app.use("/v1/product", require("./routes/product"));
 app.use("/v1/sub-category", require("./routes/subCategory"));
 app.use("/v1/helper", require("./routes/helper"));
+app.use("/v1/division", require("./routes/division"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
