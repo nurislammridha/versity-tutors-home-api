@@ -26,8 +26,10 @@ app.use("/v1/helper", require("./routes/helper"));
 app.use("/v1/division", require("./routes/division"));
 app.use("/v1/district", require("./routes/district"));
 app.use("/v1/sub-district", require("./routes/subDistrict"));
+app.use("/v1/area", require("./routes/area"));
 app.use("/v1/language", require("./routes/language"));
 app.use("/v1/connection-package", require("./routes/connectionPackage"));
+app.use("/v1/client", require("./routes/client"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

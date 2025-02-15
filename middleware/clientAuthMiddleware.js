@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const ErrorResponse = require("../utils/errorResponse");
-const Buyer = require("../models/Buyer");
+const Client = require("../models/Client");
 
 const protect = async (req, res, next) => {
   let token;
@@ -21,7 +21,7 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, "123456789");
 
-    const user = await Buyer.findById(decoded.id);
+    const user = await Client.findById(decoded.id);
 
     if (!user) {
       return next(new ErrorResponse("No user found with this id", 404));
