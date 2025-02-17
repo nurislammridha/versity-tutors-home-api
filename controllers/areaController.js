@@ -60,6 +60,22 @@ const areaById = async (req, res) => {
     }
   }).populate('divisionInfo').populate('districtInfo').populate('subDistrictInfo');
 };
+//Area By Sub District ID//
+const areaBySubDistrict = async (req, res) => {
+  await Area.find({ subDistrictId: req.params.id }, (err, data) => {
+    if (err) {
+      res.status(500).json({
+        error: "There was a server side error!",
+      });
+    } else {
+      res.status(200).json({
+        result: data,
+        message: "Area By District Id!",
+        status: true,
+      });
+    }
+  }).populate('divisionInfo').populate('districtInfo').populate('subDistrictInfo');
+};
 //Area By District ID//
 const areaByDistrict = async (req, res) => {
   await Area.find({ districtId: req.params.id }, (err, data) => {
@@ -130,4 +146,4 @@ const deleteArea = async (req, res) => {
     }
   });
 };
-module.exports = { createArea, allAreas, areaById, areaByDivision, areaByDistrict, updateArea, deleteArea };
+module.exports = { createArea, allAreas, areaById, areaByDivision, areaByDistrict, updateArea, deleteArea, areaBySubDistrict };

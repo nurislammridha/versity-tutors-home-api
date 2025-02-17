@@ -6,8 +6,8 @@ const { createSubDistrict, subDistrictById, updateSubDistrict, deleteSubDistrict
 router.route('/').post(adminAuth, createSubDistrict)
 router.route('/').get(allSubDistricts)
 router.route('/:id').get(subDistrictById)
-router.route('/by-district/:id').get(adminAuth, subDistrictByDistrict)
-router.route('/by-division/:id').get(adminAuth, subDistrictByDivision)
+router.route('/by-district/:id').get(subDistrictByDistrict)
+router.route('/by-division/:id').get(subDistrictByDivision)
 router.route('/:id').put(adminAuth, updateSubDistrict)
 router.route('/:id').delete(adminAuth, deleteSubDistrict)
 

@@ -63,7 +63,7 @@ const ClientSchema = new mongoose.Schema({
         require: false,
     },
     hourlyFee: {
-        type: String,
+        type: Number,
         require: false,
     },
     tagline: {
@@ -114,15 +114,15 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
-    languageId: {
+    languageId: [{
         type: String,
         require: false,
-    },
-    languageInfo: {
+    }],
+    languageInfo: [{
         type: mongoose.Schema.Types.ObjectId,
         require: false,
         ref: 'Language'
-    },
+    }],
     tutorBriefIntroduction: {
         type: String,
         require: false,
@@ -228,6 +228,14 @@ const ClientSchema = new mongoose.Schema({
         default: false,
     },
     isTeachingLocationOffline: {
+        type: Boolean,
+        default: false,
+    },
+    isTeachingLocationTutorHome: {
+        type: Boolean,
+        default: false,
+    },
+    isTeachingLocationStudentHome: {
         type: Boolean,
         default: false,
     },
