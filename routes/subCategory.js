@@ -6,7 +6,7 @@ const { createSubCategory, allSubCategories, subCategoryById, subCategoryByCateg
 router.route('/').post(adminAuth, createSubCategory)
 router.route('/').get(allSubCategories)
 router.route('/:id').get(subCategoryById)
-router.route('/by-category/:id').get(adminAuth, subCategoryByCategory)
+router.route('/by-category/:id').get(subCategoryByCategory)
 router.route('/:id').put(adminAuth, updateSubCategory)
 router.route('/:id').delete(adminAuth, deleteSubCategory)
 

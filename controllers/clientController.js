@@ -466,6 +466,7 @@ const socialLogin = async (req, res) => {
 
 //all Client
 const allClientList = async (req, res) => {
+
     try {
         await Client.find((err, data) => {
             if (err) {
@@ -499,7 +500,10 @@ const allClientById = async (req, res) => {
                 status: true,
             });
         }
-    });
+    })
+        // .populate('subject.categoryInfo') // Populate categoryInfo
+        //     .populate('subject.subCategories.subCategoryInfo')// Populate subCategoryInfo
+        .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo")
 };
 
 //Update client by id
@@ -539,4 +543,100 @@ const deleteClient = async (req, res) => {
         }
     });
 };
-module.exports = { socialLogin, createClient, clientLogin, allClientList, allClientById, updateClient, deleteClient, sendEmailOtp, checkClient, forgetPasswordOtp, setPassword, checkClientPhone };
+//filter client
+const filterClient = async (req, res) => {
+    try {
+        let {
+            search, filters, page = 1, limit = 10, sortBy
+        } = req.body;
+
+        page = parseInt(page);
+        limit = parseInt(limit);
+        const skip = (page - 1) * limit;
+
+        let query = {};
+
+        // Search by multiple fields
+        if (search) {
+            const regex = new RegExp(search, "i"); // Case-insensitive search
+            query.$or = [
+                { firstName: regex },
+                { lastName: regex },
+                { tagline: regex },
+                { address: regex },
+                // { "divisionInfo.divisionName": regex },
+                // { "districtInfo.districtName": regex },
+                // { "subDistrictInfo.subDistrictName": regex },
+                // { "areaInfo.areaName": regex },
+                // { "subject.categoryInfo.categoryName": regex },
+                // { "subject.subCategories.subCategoryInfo.subCategoryName": regex }
+            ];
+        }
+
+        // Apply filters if provided
+        if (filters) {
+            if (filters.hourlyFee) {
+                query.hourlyFee = {
+                    $gte: filters.hourlyFee.min || 0,
+                    $lte: filters.hourlyFee.max || Number.MAX_SAFE_INTEGER
+                };
+            }
+            if (filters.gender) query.gender = filters.gender;
+            if (filters.divisionId) query.divisionId = filters.divisionId;
+            if (filters.districtId) query.districtId = filters.districtId;
+            if (filters.subDistrictId) query.subDistrictId = filters.subDistrictId;
+            if (filters.areaId) query.areaId = filters.areaId;
+            if (filters.address) query.address = new RegExp(filters.address, "i");
+
+            if (filters.categoryId) query["subject.categoryId"] = filters.categoryId;
+            // if (filters.subCategoryId) query["subject.subCategories.subCategoryId"] = filters.subCategoryId;
+            if (filters.subCategoryId && Array.isArray(filters.subCategoryId) && filters.subCategoryId.length > 0) {
+                query["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
+            }
+            if (filters.isTeachingLocationOnline !== undefined) query.isTeachingLocationOnline = filters.isTeachingLocationOnline;
+            if (filters.isTeachingLocationOffline !== undefined) query.isTeachingLocationOffline = filters.isTeachingLocationOffline;
+            if (filters.isTeachingLocationTutorHome !== undefined) query.isTeachingLocationTutorHome = filters.isTeachingLocationTutorHome;
+            if (filters.isTeachingLocationStudentHome !== undefined) query.isTeachingLocationStudentHome = filters.isTeachingLocationStudentHome;
+            if (filters.isTutorAccount !== undefined) query.isTutorAccount = filters.isTutorAccount;
+            if (filters.isApproved !== undefined) query.isApproved = filters.isApproved;
+        }
+        // Sorting logic
+        let sortOptions = {};
+        if (sortBy) {
+            if (sortBy === "Best Match") {
+                sortOptions = { createdAt: -1 }; // Default to latest clients
+            } else if (sortBy === "Price low to high") {
+                sortOptions = { hourlyFee: 1 }; // Ascending order
+            } else if (sortBy === "Price high to low") {
+                sortOptions = { hourlyFee: -1 }; // Descending order
+            }
+        }
+        // console.log('query', query)
+        // Fetch data with pagination
+        const clients = await Client.find(query)
+            .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo")
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(limit);
+
+        // Get total count for pagination
+        const totalClients = await Client.countDocuments(query);
+
+        res.json({
+            status: true,
+            result: clients,
+            pagination: {
+                total: totalClients,
+                page,
+                limit,
+                totalPages: Math.ceil(totalClients / limit)
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ status: false, message: error.message });
+    }
+
+};
+
+module.exports = { socialLogin, createClient, clientLogin, allClientList, allClientById, updateClient, deleteClient, sendEmailOtp, checkClient, forgetPasswordOtp, setPassword, checkClientPhone, filterClient };

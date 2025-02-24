@@ -8,6 +8,10 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    gender: {
+        type: String,
+        require: false,
+    },
     email: {
         type: String,
         require: false,
@@ -51,11 +55,11 @@ const ClientSchema = new mongoose.Schema({
     avatar: {
         url: {
             type: String,
-            require: true,
+            require: false,
         },
         publicId: {
             type: String,
-            require: true,
+            require: false,
         }
     },
     grade: {
@@ -159,7 +163,7 @@ const ClientSchema = new mongoose.Schema({
             },
         }
     ],
-    subjectsTutorCan: [{
+    subject: [{
         categoryId: {
             type: String,
             require: false,
@@ -169,15 +173,17 @@ const ClientSchema = new mongoose.Schema({
             require: false,
             ref: 'Category'
         },
-        subCategoryId: {
-            type: String,
-            require: false,
-        },
-        subCategoryInfo: {
-            type: mongoose.Schema.Types.ObjectId,
-            require: false,
-            ref: 'SubCategory'
-        },
+        subCategories: [{
+            subCategoryId: {
+                type: String,
+                require: false,
+            },
+            subCategoryInfo: {
+                type: mongoose.Schema.Types.ObjectId,
+                require: false,
+                ref: 'SubCategory'
+            }
+        }]
     }],
     tutorCalender: [{
         day: {
