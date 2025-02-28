@@ -31,6 +31,7 @@ app.use("/v1/language", require("./routes/language"));
 app.use("/v1/connection-package", require("./routes/connectionPackage"));
 app.use("/v1/client", require("./routes/client"));
 app.use("/v1/review", require("./routes/review"));
+app.use("/v1/book", require("./routes/book"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
