@@ -130,7 +130,15 @@ const ClientSchema = new mongoose.Schema({
     tutorBriefIntroduction: {
         type: String,
         require: false,
+        default: ""
     },
+    unlockInfo: [
+        {
+            type: String,
+            require: false,
+            // default:[]
+        }
+    ],
     education: [
         {
             degree: {

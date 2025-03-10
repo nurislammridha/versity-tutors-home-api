@@ -1,6 +1,6 @@
 // utils/mailSender.js
 const nodemailer = require('nodemailer');
-
+//google account=>app password
 const mailSender = async (email, title, body) => {
     try {
         // Create a Transporter to send emails
@@ -8,7 +8,8 @@ const mailSender = async (email, title, body) => {
             host: "smtp.gmail.com",
             auth: {
                 user: "mridha851@gmail.com",
-                pass: "iuuh prnf acbi ggvm",
+                // pass: "iuuh prnf acbi ggvm",
+                pass: "zxcx fpom dcdu nuyw",
             }
         });
         // Send emails to users

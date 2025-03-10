@@ -9,7 +9,7 @@ router.route('/').post(createMyConnection)
 router.route('/').get(allMyConnection)
 router.route('/by-client/:id').get(myConnectionByClientId)
 router.route('/:id').get(myConnectionById)
-router.route('/:id').put(adminAuth, updateMyConnection)
+router.route('/:id').put(updateMyConnection)
 router.route('/:id').delete(adminAuth, deleteMyConnection)
 
 module.exports = router;

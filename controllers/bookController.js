@@ -98,7 +98,7 @@ const bookByBookerId = async (req, res) => {
   let query = {}
   if (bookerId) query.bookerId = bookerId
   if (clientId) query.clientId = clientId
-  if (status) query.status = status
+  if (status && status !== "null") query.status = status
   // query["bookerId.isTutorAccount"] = isTutorAccount
   const pageNumber = parseInt(page) || 1;
   const limitNumber = parseInt(limit) || 10;
@@ -124,6 +124,7 @@ const bookByBookerId = async (req, res) => {
     }
   })
     .populate("clientId", "_id firstName lastName phone createdAt")
+    .populate("bookerId", "_id firstName lastName phone createdAt")
     .skip(skip)
     .limit(limitNumber)
     .sort({ createdAt: -1 })

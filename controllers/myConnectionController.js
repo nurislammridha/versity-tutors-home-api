@@ -30,7 +30,7 @@ const allMyConnection = async (req, res) => {
           status: true,
         });
       }
-    });
+    }).populate("clientId connectionPackageId");
   } catch (error) {
     res.status(500).send("Server error");
   }
