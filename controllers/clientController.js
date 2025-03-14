@@ -598,6 +598,9 @@ const filterClient = async (req, res) => {
             if (filters.isTeachingLocationTutorHome !== undefined) query.isTeachingLocationTutorHome = filters.isTeachingLocationTutorHome;
             if (filters.isTeachingLocationStudentHome !== undefined) query.isTeachingLocationStudentHome = filters.isTeachingLocationStudentHome;
             if (filters.isTutorAccount !== undefined) query.isTutorAccount = filters.isTutorAccount;
+            if (filters.isFeatured !== undefined) query.isFeatured = filters.isFeatured;
+            if (filters.isBooked !== undefined) query.isBooked = filters.isBooked;
+            if (filters.isRequestToApprove !== undefined) query.isRequestToApprove = filters.isRequestToApprove;
             if (filters.isApproved !== undefined) query.isApproved = filters.isApproved;
         }
         // Sorting logic
