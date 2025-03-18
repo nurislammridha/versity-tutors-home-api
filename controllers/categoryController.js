@@ -5,14 +5,14 @@ const Category = require("../models/Category");
 //@desc Admin login
 //@access Public
 const createCategory = async (req, res) => {
-  const { categoryName, categoryImg, categoryLogo } = req.body;
+  const { categoryName } = req.body;
   try {
     let catName = await Category.findOne({ categoryName });
     //see if user exists
     if (catName) {
       return res.status(400).json({ message: "Category already exist" });
     }
-    let category = new Category({ categoryName, categoryImg, categoryLogo });
+    let category = new Category(req.body);
     await category.save();
     res.status(200).json({
       message: "Category inserted succesfully",

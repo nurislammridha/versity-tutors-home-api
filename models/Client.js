@@ -139,6 +139,12 @@ const ClientSchema = new mongoose.Schema({
             // default:[]
         }
     ],
+    wishList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        require: false,
+        // default:[],
+        ref: 'Client'
+    }],
     education: [
         {
             degree: {
@@ -178,7 +184,7 @@ const ClientSchema = new mongoose.Schema({
         },
         categoryInfo: {
             type: mongoose.Schema.Types.ObjectId,
-            require: false,
+            required: false,
             ref: 'Category'
         },
         subCategories: [{

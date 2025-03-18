@@ -503,7 +503,7 @@ const allClientById = async (req, res) => {
     })
         // .populate('subject.categoryInfo') // Populate categoryInfo
         //     .populate('subject.subCategories.subCategoryInfo')// Populate subCategoryInfo
-        .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo")
+        .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo wishList")
 };
 
 //Update client by id
