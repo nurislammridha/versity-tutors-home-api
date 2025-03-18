@@ -1,4 +1,5 @@
 const Client = require("../models/Client");
+const Review = require("../models/Review");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require('../config/key');
@@ -487,23 +488,37 @@ const allClientList = async (req, res) => {
 };
 // client By ID//
 const allClientById = async (req, res) => {
-    await Client.find({ _id: req.params.id }, (err, data) => {
-        if (err) {
-            res.status(500).json({
-                error: "There was a server side error!",
-            });
-        } else {
-            let [obj] = data;
-            res.status(200).json({
-                result: obj,
-                message: "All client by client id!",
-                status: true,
-            });
-        }
-    })
-        // .populate('subject.categoryInfo') // Populate categoryInfo
-        //     .populate('subject.subCategories.subCategoryInfo')// Populate subCategoryInfo
+    const clients = await Client.find({ _id: req.params.id })
         .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo wishList")
+    const [client] = clients
+
+    const clientUpdated = client.toObject();
+    const reviews = await Review.aggregate([
+        { $match: { clientId: client._id } },
+        {
+            $group: {
+                _id: '$clientId',
+                averageRating: { $avg: '$starRating' },
+                totalComments: { $sum: 1 }
+            }
+        }
+    ]);
+
+    // If reviews exist, update the client object with averageRating and totalComments
+    if (reviews.length > 0) {
+        clientUpdated.averageRating = reviews[0].averageRating;
+        clientUpdated.totalComments = reviews[0].totalComments;
+    } else {
+        // If no reviews exist, set default values
+        clientUpdated.averageRating = 0;
+        clientUpdated.totalComments = 0;
+    }
+
+    res.status(200).json({
+        result: clientUpdated,
+        message: "All client by client id!",
+        status: true,
+    });
 };
 
 //Update client by id
@@ -624,10 +639,65 @@ const filterClient = async (req, res) => {
 
         // Get total count for pagination
         const totalClients = await Client.countDocuments(query);
+        //Client review and ratings add
+        // for (let client of clients) {
+        //     const reviews = await Review.aggregate([
+        //         { $match: { clientId: client._id } },
+        //         {
+        //             $group: {
+        //                 _id: '$clientId',
+        //                 averageRating: { $avg: '$starRating' },
+        //                 totalComments: { $sum: 1 }
+        //             }
+        //         }
+        //     ]);
+        //     // Check if the reviews array has results and then update the client object
+        //     if (reviews.length > 0) {
+        //         client.averageRating = reviews[0].averageRating;
+        //         client.totalComments = reviews[0].totalComments;
+        //     } else {
+        //         // If no reviews exist, set default values
+        //         client.averageRating = 0;
+        //         client.totalComments = 0;
+        //     }
+        //     // Log to check if averageRating and totalComments are being added
+        //     console.log('client.averageRating', client.averageRating);
+        //     console.log('client.totalComments', client.totalComments);
+        // }
+        const updatedClients = await Promise.all(clients.map(async (clientDoc) => {
+            // Run an aggregate query to get the averageRating and totalComments for each client
+            // Convert Mongoose document to plain object
+            const client = clientDoc.toObject();
+            const reviews = await Review.aggregate([
+                { $match: { clientId: client._id } },
+                {
+                    $group: {
+                        _id: '$clientId',
+                        averageRating: { $avg: '$starRating' },
+                        totalComments: { $sum: 1 }
+                    }
+                }
+            ]);
+
+            // If reviews exist, update the client object with averageRating and totalComments
+            if (reviews.length > 0) {
+                client.averageRating = reviews[0].averageRating;
+                client.totalComments = reviews[0].totalComments;
+            } else {
+                // If no reviews exist, set default values
+                client.averageRating = 0;
+                client.totalComments = 0;
+            }
+            // console.log('client.totalComments', client.totalComments)
+            // Return the updated client object
+            return client;
+        }));
+
+        // console.log('clients', clients)
 
         res.json({
             status: true,
-            result: clients,
+            result: updatedClients,
             pagination: {
                 total: totalClients,
                 page,

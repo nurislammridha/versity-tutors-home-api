@@ -32,8 +32,41 @@ const webHome = async (req, res) => {
         }
       }
     ]);
-    if (topCat) {
+    //sub catgory group
+    const subCatGroup = await SubCategory.aggregate([
+      {
+        $lookup: {
+          from: "categories", // MongoDB collection name (usually plural lowercase)
+          localField: "categoryInfo",
+          foreignField: "_id",
+          as: "categoryData"
+        }
+      },
+      { $unwind: "$categoryData" },
+      {
+        $group: {
+          _id: "$categoryData._id", // Category _id
+          categoryName: { $first: "$categoryData.categoryName" },
+          subCategory: {
+            $push: {
+              _id: "$_id", // SubCategory _id
+              subCategoryName: "$subCategoryName"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 1, // Category _id
+          categoryName: 1,
+          subCategory: 1
+        }
+      }
+    ]);
+
+    if (topCat && subCatGroup) {
       homeInfo.topCat = topCat
+      homeInfo.subCatGroup = subCatGroup
       homeInfo.count = {
         totalActiveTutor, totalStudent, totalSubject, totalArea
       }
