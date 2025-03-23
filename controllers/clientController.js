@@ -559,6 +559,158 @@ const deleteClient = async (req, res) => {
     });
 };
 //filter client
+// const filterClient = async (req, res) => {
+//     try {
+//         let {
+//             search, filters, page = 1, limit = 10, sortBy
+//         } = req.body;
+
+//         page = parseInt(page);
+//         limit = parseInt(limit);
+//         const skip = (page - 1) * limit;
+
+//         let query = {};
+
+//         // Search by multiple fields
+//         if (search) {
+//             const regex = new RegExp(search, "i"); // Case-insensitive search
+//             query.$or = [
+//                 { firstName: regex },
+//                 { lastName: regex },
+//                 { tagline: regex },
+//                 { address: regex },
+//                 { "divisionInfo.divisionName": regex },
+//                 { "districtInfo.districtName": regex },
+//                 { "subDistrictInfo.subDistrictName": regex },
+//                 { "areaInfo.areaName": regex },
+//                 { "subject.categoryInfo.categoryName": regex },
+//                 { "subject.subCategories.subCategoryInfo.subCategoryName": regex }
+//             ];
+//         }
+
+//         // Apply filters if provided
+//         if (filters) {
+//             if (filters.hourlyFee) {
+//                 query.hourlyFee = {
+//                     $gte: filters.hourlyFee.min || 0,
+//                     $lte: filters.hourlyFee.max || Number.MAX_SAFE_INTEGER
+//                 };
+//             }
+//             if (filters.gender) query.gender = filters.gender;
+//             if (filters.divisionId) query.divisionId = filters.divisionId;
+//             if (filters.districtId) query.districtId = filters.districtId;
+//             if (filters.subDistrictId) query.subDistrictId = filters.subDistrictId;
+//             if (filters.areaId) query.areaId = filters.areaId;
+//             if (filters.address) query.address = new RegExp(filters.address, "i");
+
+//             if (filters.categoryId) query["subject.categoryId"] = filters.categoryId;
+//             // if (filters.subCategoryId) query["subject.subCategories.subCategoryId"] = filters.subCategoryId;
+//             if (filters.subCategoryId && Array.isArray(filters.subCategoryId) && filters.subCategoryId.length > 0) {
+//                 query["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
+//             }
+//             if (filters.isTeachingLocationOnline !== undefined) query.isTeachingLocationOnline = filters.isTeachingLocationOnline;
+//             if (filters.isTeachingLocationOffline !== undefined) query.isTeachingLocationOffline = filters.isTeachingLocationOffline;
+//             if (filters.isTeachingLocationTutorHome !== undefined) query.isTeachingLocationTutorHome = filters.isTeachingLocationTutorHome;
+//             if (filters.isTeachingLocationStudentHome !== undefined) query.isTeachingLocationStudentHome = filters.isTeachingLocationStudentHome;
+//             if (filters.isTutorAccount !== undefined) query.isTutorAccount = filters.isTutorAccount;
+//             if (filters.isFeatured !== undefined) query.isFeatured = filters.isFeatured;
+//             if (filters.isBooked !== undefined) query.isBooked = filters.isBooked;
+//             if (filters.isRequestToApprove !== undefined) query.isRequestToApprove = filters.isRequestToApprove;
+//             if (filters.isApproved !== undefined) query.isApproved = filters.isApproved;
+//         }
+//         // Sorting logic
+//         let sortOptions = {};
+//         if (sortBy) {
+//             if (sortBy === "Best Match") {
+//                 sortOptions = { createdAt: -1 }; // Default to latest clients
+//             } else if (sortBy === "Price low to high") {
+//                 sortOptions = { hourlyFee: 1 }; // Ascending order
+//             } else if (sortBy === "Price high to low") {
+//                 sortOptions = { hourlyFee: -1 }; // Descending order
+//             }
+//         }
+//         // console.log('query', query)
+//         // Fetch data with pagination
+//         const clients = await Client.find(query)
+//             .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo")
+//             .sort(sortOptions)
+//             .skip(skip)
+//             .limit(limit);
+
+//         // Get total count for pagination
+//         const totalClients = await Client.countDocuments(query);
+//         //Client review and ratings add
+//         // for (let client of clients) {
+//         //     const reviews = await Review.aggregate([
+//         //         { $match: { clientId: client._id } },
+//         //         {
+//         //             $group: {
+//         //                 _id: '$clientId',
+//         //                 averageRating: { $avg: '$starRating' },
+//         //                 totalComments: { $sum: 1 }
+//         //             }
+//         //         }
+//         //     ]);
+//         //     // Check if the reviews array has results and then update the client object
+//         //     if (reviews.length > 0) {
+//         //         client.averageRating = reviews[0].averageRating;
+//         //         client.totalComments = reviews[0].totalComments;
+//         //     } else {
+//         //         // If no reviews exist, set default values
+//         //         client.averageRating = 0;
+//         //         client.totalComments = 0;
+//         //     }
+//         //     // Log to check if averageRating and totalComments are being added
+//         //     console.log('client.averageRating', client.averageRating);
+//         //     console.log('client.totalComments', client.totalComments);
+//         // }
+//         const updatedClients = await Promise.all(clients.map(async (clientDoc) => {
+//             // Run an aggregate query to get the averageRating and totalComments for each client
+//             // Convert Mongoose document to plain object
+//             const client = clientDoc.toObject();
+//             const reviews = await Review.aggregate([
+//                 { $match: { clientId: client._id } },
+//                 {
+//                     $group: {
+//                         _id: '$clientId',
+//                         averageRating: { $avg: '$starRating' },
+//                         totalComments: { $sum: 1 }
+//                     }
+//                 }
+//             ]);
+
+//             // If reviews exist, update the client object with averageRating and totalComments
+//             if (reviews.length > 0) {
+//                 client.averageRating = reviews[0].averageRating;
+//                 client.totalComments = reviews[0].totalComments;
+//             } else {
+//                 // If no reviews exist, set default values
+//                 client.averageRating = 0;
+//                 client.totalComments = 0;
+//             }
+//             // console.log('client.totalComments', client.totalComments)
+//             // Return the updated client object
+//             return client;
+//         }));
+
+//         // console.log('clients', clients)
+
+//         res.json({
+//             status: true,
+//             result: updatedClients,
+//             pagination: {
+//                 total: totalClients,
+//                 page,
+//                 limit,
+//                 totalPages: Math.ceil(totalClients / limit)
+//             }
+//         });
+
+//     } catch (error) {
+//         res.status(500).json({ status: false, message: error.message });
+//     }
+
+// };
 const filterClient = async (req, res) => {
     try {
         let {
@@ -569,105 +721,265 @@ const filterClient = async (req, res) => {
         limit = parseInt(limit);
         const skip = (page - 1) * limit;
 
-        let query = {};
+        // Start aggregation pipeline
+        let pipeline = [];
 
-        // Search by multiple fields
+        // Lookups (populate equivalents)
+        pipeline.push(
+            {
+                $lookup: {
+                    from: 'divisions',
+                    localField: 'divisionInfo',
+                    foreignField: '_id',
+                    as: 'divisionInfo'
+                }
+            },
+            { $unwind: { path: '$divisionInfo', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'districts',
+                    localField: 'districtInfo',
+                    foreignField: '_id',
+                    as: 'districtInfo'
+                }
+            },
+            { $unwind: { path: '$districtInfo', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'subdistricts',
+                    localField: 'subDistrictInfo',
+                    foreignField: '_id',
+                    as: 'subDistrictInfo'
+                }
+            },
+            { $unwind: { path: '$subDistrictInfo', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'areas',
+                    localField: 'areaInfo',
+                    foreignField: '_id',
+                    as: 'areaInfo'
+                }
+            },
+            { $unwind: { path: '$areaInfo', preserveNullAndEmptyArrays: true } },
+            // {
+            //     $lookup: {
+            //         from: 'categories',
+            //         localField: 'subject.categoryInfo',
+            //         foreignField: '_id',
+            //         as: 'categoryInfoData'
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: 'subcategories',
+            //         localField: 'subject.subCategories.subCategoryInfo',
+            //         foreignField: '_id',
+            //         as: 'subjectSubCategoryInfo'
+            //     }
+            // }
+        );
+        //new code subjects
+        // Group subCategories back into array for each subject
+
+
+        // 1. Unwind subject array
+        pipeline.push({
+            $unwind: {
+                path: '$subject',
+                preserveNullAndEmptyArrays: true
+            }
+        });
+
+        // 2. Lookup categoryInfo for each subject
+        pipeline.push({
+            $lookup: {
+                from: 'categories',
+                localField: 'subject.categoryInfo',
+                foreignField: '_id',
+                as: 'subject.categoryInfoData'
+            }
+        });
+
+        // 3. Replace categoryInfo ID with full document
+        pipeline.push({
+            $addFields: {
+                'subject.categoryInfo': {
+                    $arrayElemAt: ['$subject.categoryInfoData', 0]
+                }
+            }
+        });
+
+        // 4. Unwind subCategories array
+        pipeline.push({
+            $unwind: {
+                path: '$subject.subCategories',
+                preserveNullAndEmptyArrays: true
+            }
+        });
+
+        // 5. Lookup subCategoryInfo for each subCategory
+        pipeline.push({
+            $lookup: {
+                from: 'subcategories',
+                localField: 'subject.subCategories.subCategoryInfo',
+                foreignField: '_id',
+                as: 'subject.subCategories.subCategoryInfoData'
+            }
+        });
+
+        // 6. Replace subCategoryInfo ID with full document
+        pipeline.push({
+            $addFields: {
+                'subject.subCategories.subCategoryInfo': {
+                    $arrayElemAt: ['$subject.subCategories.subCategoryInfoData', 0]
+                }
+            }
+        });
+
+        // 7. Group subCategories per subject
+        pipeline.push({
+            $group: {
+                _id: {
+                    clientId: '$_id',
+                    categoryId: '$subject.categoryInfo._id'
+                },
+                doc: { $first: '$$ROOT' },
+                subCategories: { $push: '$subject.subCategories' }
+            }
+        });
+
+        // 8. Flatten subCategories
+        pipeline.push({
+            $addFields: {
+                'doc.subject.subCategories': {
+                    $reduce: {
+                        input: '$subCategories',
+                        initialValue: [],
+                        in: { $concatArrays: ['$$value', ['$this']] }
+                    }
+                }
+            }
+        });
+
+        // 9. Restore document
+        pipeline.push({
+            $replaceRoot: {
+                newRoot: '$doc'
+            }
+        });
+
+        // 10. Group all subjects per client
+        pipeline.push({
+            $group: {
+                _id: '$_id',
+                clientDoc: { $first: '$$ROOT' },
+                subjects: { $push: '$subject' }
+            }
+        });
+
+        // 11. Set clientDoc.subject = all subjects
+        pipeline.push({
+            $addFields: {
+                'clientDoc.subject': '$subjects'
+            }
+        });
+
+        // 12. Final output
+        pipeline.push({
+            $replaceRoot: {
+                newRoot: '$clientDoc'
+            }
+        });
+
+
+        //new code subjects
+
+
+
+        // Search logic
         if (search) {
-            const regex = new RegExp(search, "i"); // Case-insensitive search
-            query.$or = [
-                { firstName: regex },
-                { lastName: regex },
-                { tagline: regex },
-                { address: regex },
-                // { "divisionInfo.divisionName": regex },
-                // { "districtInfo.districtName": regex },
-                // { "subDistrictInfo.subDistrictName": regex },
-                // { "areaInfo.areaName": regex },
-                // { "subject.categoryInfo.categoryName": regex },
-                // { "subject.subCategories.subCategoryInfo.subCategoryName": regex }
-            ];
+            const regex = new RegExp(search, "i");
+
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { firstName: regex },
+                        { lastName: regex },
+                        { tagline: regex },
+                        { address: regex },
+                        { "divisionInfo.divisionName": regex },
+                        { "districtInfo.districtName": regex },
+                        { "subDistrictInfo.subDistrictName": regex },
+                        { "areaInfo.areaName": regex },
+                        { "subjectCategoryInfo.categoryName": regex },
+                        { "subjectSubCategoryInfo.subCategoryName": regex },
+                    ]
+                }
+            });
         }
 
-        // Apply filters if provided
+        // Filters logic
+        let matchStage = {};
         if (filters) {
             if (filters.hourlyFee) {
-                query.hourlyFee = {
+                matchStage.hourlyFee = {
                     $gte: filters.hourlyFee.min || 0,
                     $lte: filters.hourlyFee.max || Number.MAX_SAFE_INTEGER
                 };
             }
-            if (filters.gender) query.gender = filters.gender;
-            if (filters.divisionId) query.divisionId = filters.divisionId;
-            if (filters.districtId) query.districtId = filters.districtId;
-            if (filters.subDistrictId) query.subDistrictId = filters.subDistrictId;
-            if (filters.areaId) query.areaId = filters.areaId;
-            if (filters.address) query.address = new RegExp(filters.address, "i");
+            if (filters.gender) matchStage.gender = filters.gender;
+            if (filters.divisionId) matchStage.divisionId = filters.divisionId;
+            if (filters.districtId) matchStage.districtId = filters.districtId;
+            if (filters.subDistrictId) matchStage.subDistrictId = filters.subDistrictId;
+            if (filters.areaId) matchStage.areaId = filters.areaId;
+            if (filters.address) matchStage.address = new RegExp(filters.address, "i");
 
-            if (filters.categoryId) query["subject.categoryId"] = filters.categoryId;
-            // if (filters.subCategoryId) query["subject.subCategories.subCategoryId"] = filters.subCategoryId;
+            if (filters.categoryId) matchStage["subject.categoryId"] = filters.categoryId;
             if (filters.subCategoryId && Array.isArray(filters.subCategoryId) && filters.subCategoryId.length > 0) {
-                query["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
+                matchStage["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
             }
-            if (filters.isTeachingLocationOnline !== undefined) query.isTeachingLocationOnline = filters.isTeachingLocationOnline;
-            if (filters.isTeachingLocationOffline !== undefined) query.isTeachingLocationOffline = filters.isTeachingLocationOffline;
-            if (filters.isTeachingLocationTutorHome !== undefined) query.isTeachingLocationTutorHome = filters.isTeachingLocationTutorHome;
-            if (filters.isTeachingLocationStudentHome !== undefined) query.isTeachingLocationStudentHome = filters.isTeachingLocationStudentHome;
-            if (filters.isTutorAccount !== undefined) query.isTutorAccount = filters.isTutorAccount;
-            if (filters.isFeatured !== undefined) query.isFeatured = filters.isFeatured;
-            if (filters.isBooked !== undefined) query.isBooked = filters.isBooked;
-            if (filters.isRequestToApprove !== undefined) query.isRequestToApprove = filters.isRequestToApprove;
-            if (filters.isApproved !== undefined) query.isApproved = filters.isApproved;
-        }
-        // Sorting logic
-        let sortOptions = {};
-        if (sortBy) {
-            if (sortBy === "Best Match") {
-                sortOptions = { createdAt: -1 }; // Default to latest clients
-            } else if (sortBy === "Price low to high") {
-                sortOptions = { hourlyFee: 1 }; // Ascending order
-            } else if (sortBy === "Price high to low") {
-                sortOptions = { hourlyFee: -1 }; // Descending order
-            }
-        }
-        // console.log('query', query)
-        // Fetch data with pagination
-        const clients = await Client.find(query)
-            .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo")
-            .sort(sortOptions)
-            .skip(skip)
-            .limit(limit);
 
-        // Get total count for pagination
-        const totalClients = await Client.countDocuments(query);
-        //Client review and ratings add
-        // for (let client of clients) {
-        //     const reviews = await Review.aggregate([
-        //         { $match: { clientId: client._id } },
-        //         {
-        //             $group: {
-        //                 _id: '$clientId',
-        //                 averageRating: { $avg: '$starRating' },
-        //                 totalComments: { $sum: 1 }
-        //             }
-        //         }
-        //     ]);
-        //     // Check if the reviews array has results and then update the client object
-        //     if (reviews.length > 0) {
-        //         client.averageRating = reviews[0].averageRating;
-        //         client.totalComments = reviews[0].totalComments;
-        //     } else {
-        //         // If no reviews exist, set default values
-        //         client.averageRating = 0;
-        //         client.totalComments = 0;
-        //     }
-        //     // Log to check if averageRating and totalComments are being added
-        //     console.log('client.averageRating', client.averageRating);
-        //     console.log('client.totalComments', client.totalComments);
-        // }
-        const updatedClients = await Promise.all(clients.map(async (clientDoc) => {
-            // Run an aggregate query to get the averageRating and totalComments for each client
-            // Convert Mongoose document to plain object
-            const client = clientDoc.toObject();
+            // Boolean filters
+            const boolFields = [
+                'isTeachingLocationOnline', 'isTeachingLocationOffline',
+                'isTeachingLocationTutorHome', 'isTeachingLocationStudentHome',
+                'isTutorAccount', 'isFeatured', 'isBooked', 'isRequestToApprove', 'isApproved'
+            ];
+            boolFields.forEach(field => {
+                if (filters[field] !== undefined) {
+                    matchStage[field] = filters[field];
+                }
+            });
+        }
+
+        if (Object.keys(matchStage).length > 0) {
+            pipeline.push({ $match: matchStage });
+        }
+
+        // Sorting logic
+        let sortStage = {};
+        if (sortBy === "Price low to high") {
+            sortStage.hourlyFee = 1;
+        } else if (sortBy === "Price high to low") {
+            sortStage.hourlyFee = -1;
+        } else {
+            sortStage.createdAt = -1; // Default
+        }
+        pipeline.push({ $sort: sortStage });
+
+        // Count total documents before pagination
+        const totalClientsPipeline = [...pipeline, { $count: 'total' }];
+        const totalResult = await Client.aggregate(totalClientsPipeline);
+        const totalClients = totalResult.length > 0 ? totalResult[0].total : 0;
+
+        // Pagination
+        pipeline.push({ $skip: skip }, { $limit: limit });
+
+        const clients = await Client.aggregate(pipeline);
+
+        // Add review info
+        const updatedClients = await Promise.all(clients.map(async (client) => {
             const reviews = await Review.aggregate([
                 { $match: { clientId: client._id } },
                 {
@@ -678,22 +990,15 @@ const filterClient = async (req, res) => {
                     }
                 }
             ]);
-
-            // If reviews exist, update the client object with averageRating and totalComments
             if (reviews.length > 0) {
                 client.averageRating = reviews[0].averageRating;
                 client.totalComments = reviews[0].totalComments;
             } else {
-                // If no reviews exist, set default values
                 client.averageRating = 0;
                 client.totalComments = 0;
             }
-            // console.log('client.totalComments', client.totalComments)
-            // Return the updated client object
             return client;
         }));
-
-        // console.log('clients', clients)
 
         res.json({
             status: true,
@@ -709,7 +1014,6 @@ const filterClient = async (req, res) => {
     } catch (error) {
         res.status(500).json({ status: false, message: error.message });
     }
-
 };
 
 module.exports = { socialLogin, createClient, clientLogin, allClientList, allClientById, updateClient, deleteClient, sendEmailOtp, checkClient, forgetPasswordOtp, setPassword, checkClientPhone, filterClient };
