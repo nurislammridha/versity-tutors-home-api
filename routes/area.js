@@ -3,7 +3,7 @@ const router = express.Router();
 const adminAuth = require('../middleware/adminAuthMiddleware');
 const { createArea, areaById, updateArea, deleteArea, allAreas, areaByDivision, areaByDistrict, areaBySubDistrict } = require("../controllers/areaController");
 
-router.route('/').post(adminAuth, createArea)
+router.route('/').post(createArea)
 router.route('/').get(allAreas)
 router.route('/:id').get(areaById)
 router.route('/by-sub-district/:id').get(areaBySubDistrict)

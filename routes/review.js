@@ -9,7 +9,7 @@ router.route('/').post(createReview)
 router.route('/').get(allReviews)
 router.route('/client').get(reviewByClientId)
 router.route('/:id').get(reviewById)
-router.route('/:id').put(adminAuth, updateReview)
-router.route('/:id').delete(adminAuth, deleteReview)
+router.route('/:id').put(updateReview)
+router.route('/:id').delete(deleteReview)
 
 module.exports = router;

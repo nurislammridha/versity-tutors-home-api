@@ -5,7 +5,7 @@ const router = express.Router();
 //@route POST api/admin
 //@desc Admin login
 //@access Public
-router.route('/').post(adminAuth, createDivision)
+router.route('/').post(createDivision)
 router.route('/').get(allDivisions)
 router.route('/:id').get(divisionById)
 router.route('/:id').put(adminAuth, updateDivision)

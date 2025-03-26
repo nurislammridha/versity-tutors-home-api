@@ -5,7 +5,7 @@ const router = express.Router();
 //@route POST api/admin
 //@desc Admin login
 //@access Public
-router.route('/').post(adminAuth, createCategory)
+router.route('/').post(createCategory)
 router.route('/').get(allCategories)
 router.route('/:id').get(categoryById)
 router.route('/:id').put(adminAuth, updateCategory)
