@@ -15,7 +15,7 @@ app.use(express.json({ extended: false }));
 app.use(express.static("up"));
 app.get("/", (req, res) => res.send("API Running1"));
 //Define Routes
-//cors policy
+//cors policy//
 app.use(cors());
 app.options("*", cors());
 app.use("/v1/admin/login", require("./routes/admin"));
