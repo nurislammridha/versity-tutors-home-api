@@ -2,15 +2,20 @@ const mongoose = require("mongoose");
 const DistrictSchema = new mongoose.Schema({
   districtName: {
     type: String,
-    require: true,
+    required: true,
+  },
+  districtNameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   divisionId: {
     type: String,
-    require: true,
+    required: true,
   },
   divisionInfo: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'Division'
   },
   isActive: {

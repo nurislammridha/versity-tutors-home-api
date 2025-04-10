@@ -10,12 +10,12 @@ const createCategory = async (req, res) => {
     let catName = await Category.findOne({ categoryName });
     //see if user exists
     if (catName) {
-      return res.status(400).json({ message: "Category already exist" });
+      return res.status(400).json({ message: "Class already exist" });
     }
     let category = new Category(req.body);
     await category.save();
     res.status(200).json({
-      message: "Category inserted succesfully",
+      message: "Class inserted succesfully",
       status: true,
     });
   } catch (err) {
@@ -34,7 +34,7 @@ const allCategories = async (req, res) => {
       } else {
         res.status(200).json({
           result: data,
-          message: "All category are showing!",
+          message: "All class are showing!",
           status: true,
         });
       }
@@ -55,7 +55,7 @@ const categoryById = async (req, res) => {
       let [obj] = data;
       res.status(200).json({
         result: obj,
-        message: "Category was inserted successfully!",
+        message: "Class was inserted successfully!",
         status: true,
       });
     }
@@ -76,7 +76,7 @@ const updateCategory = async (req, res) => {
         });
       } else {
         res.status(200).json({
-          message: "Category were updated successfully!",
+          message: "Class were updated successfully!",
           status: true,
         });
       }
@@ -93,7 +93,7 @@ const deleteCategory = async (req, res) => {
       });
     } else {
       res.status(200).json({
-        message: "Category was deleted successfully!",
+        message: "Class was deleted successfully!",
         status: true,
       });
     }

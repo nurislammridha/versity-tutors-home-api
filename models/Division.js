@@ -2,7 +2,12 @@ const mongoose = require("mongoose");
 const DivisionSchema = new mongoose.Schema({
   divisionName: {
     type: String,
-    require: true,
+    required: true,
+  },
+  divisionNameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   isActive: {
     type: Boolean,

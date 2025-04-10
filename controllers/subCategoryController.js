@@ -5,17 +5,17 @@ const SubCategory = require("../models/SubCategory");
 //@desc Admin login
 //@access Public
 const createSubCategory = async (req, res) => {
-  const { categoryName, categoryId, categoryInfo, subCategoryName, subCategoryImg } = req.body;
+  const { categoryName, categoryId, categoryInfo, subCategoryName, subCategoryNameBn, subCategoryImg } = req.body;
   try {
     // let catName = await SubCategory.findOne({ subCategoryName });
     // //see if user exists
     // if (catName) {
     //   return res.status(400).json({ message: "Sub Category already exist" });
     // }
-    let subCategory = new SubCategory({ categoryName, categoryId, categoryInfo, subCategoryName, subCategoryImg });
+    let subCategory = new SubCategory({ categoryName, categoryId, categoryInfo, subCategoryName, subCategoryNameBn, subCategoryImg });
     await subCategory.save();
     res.status(200).json({
-      message: "Sub Category inserted succesfully",
+      message: "Subject inserted succesfully",
       status: true,
     });
   } catch (err) {
@@ -34,7 +34,7 @@ const allSubCategories = async (req, res) => {
       } else {
         res.status(200).json({
           result: data,
-          message: "All sub category are showing!",
+          message: "All subject are showing!",
           status: true,
         });
       }
@@ -55,7 +55,7 @@ const subCategoryById = async (req, res) => {
       let [obj] = data;
       res.status(200).json({
         result: obj,
-        message: "Sub Category By Id!",
+        message: "Subject By Id!",
         status: true,
       });
     }
@@ -71,7 +71,7 @@ const subCategoryByCategory = async (req, res) => {
     } else {
       res.status(200).json({
         result: data,
-        message: "Sub Category By Category Id!",
+        message: "Subject By Category Id!",
         status: true,
       });
     }
@@ -92,7 +92,7 @@ const updateSubCategory = async (req, res) => {
         });
       } else {
         res.status(200).json({
-          message: "Sub category were updated successfully!",
+          message: "Subject were updated successfully!",
           status: true,
         });
       }
@@ -109,7 +109,7 @@ const deleteSubCategory = async (req, res) => {
       });
     } else {
       res.status(200).json({
-        message: "Sub Category was deleted successfully!",
+        message: "Subject was deleted successfully!",
         status: true,
       });
     }

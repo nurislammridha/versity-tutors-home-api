@@ -5,7 +5,7 @@ const District = require("../models/District");
 //@desc Admin login
 //@access Public
 const createDistrict = async (req, res) => {
-  const { districtName } = req.body;
+  const { districtName, districtNameBn } = req.body;
   try {
     let disName = await District.findOne({ districtName });
     //see if user exists

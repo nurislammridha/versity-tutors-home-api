@@ -2,24 +2,29 @@ const mongoose = require("mongoose");
 const SubDistrictSchema = new mongoose.Schema({
   subDistrictName: {
     type: String,
-    require: true,
+    required: true,
+  },
+  subDistrictNameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   districtId: {
     type: String,
-    require: true,
+    required: true,
   },
   districtInfo: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'District'
   },
   divisionId: {
     type: String,
-    require: true,
+    required: true,
   },
   divisionInfo: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'Division'
   },
   isActive: {

@@ -12,7 +12,7 @@ const createDivision = async (req, res) => {
     if (divName) {
       return res.status(400).json({ message: "Division already exist" });
     }
-    let division = new Division({ divisionName });
+    let division = new Division(req.body);
     await division.save();
     res.status(200).json({
       message: "Division inserted succesfully",

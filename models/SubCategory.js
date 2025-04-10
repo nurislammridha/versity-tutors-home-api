@@ -2,15 +2,20 @@ const mongoose = require("mongoose");
 const SubCategorySchema = new mongoose.Schema({
   subCategoryName: {
     type: String,
-    require: true,
+    required: true,
+  },
+  subCategoryNameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   categoryId: {
     type: String,
-    require: true,
+    required: true,
   },
   categoryInfo: {
     type: mongoose.Schema.Types.ObjectId,
-    require: true,
+    required: true,
     ref: 'Category'
   },
   isActive: {

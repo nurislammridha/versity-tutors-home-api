@@ -2,15 +2,30 @@ const mongoose = require("mongoose");
 const ConnectionPackageSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: true,
+    required: true,
+  },
+  nameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   connections: {
     type: Number,
     required: true,
   },
+  connectionsBn: {
+    type: String,
+    required: true,
+    default: ""
+  },
   price: {
     type: Number,
     required: true,
+  },
+  priceBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   isActive: {
     type: Boolean,

@@ -2,16 +2,21 @@ const mongoose = require("mongoose");
 const CategorySchema = new mongoose.Schema({
   categoryName: {
     type: String,
-    require: true,
+    required: true,
+  },
+  categoryNameBn: {
+    type: String,
+    required: true,
+    default: ""
   },
   img: {
     url: {
       type: String,
-      require: false,
+      required: false,
     },
     publicId: {
       type: String,
-      require: false,
+      required: false,
     }
   },
   isActive: {
