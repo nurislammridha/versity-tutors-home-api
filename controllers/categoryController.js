@@ -43,6 +43,37 @@ const allCategories = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+// controllers/categoryController.js
+
+const allCategoriesFilter = async (req, res) => {
+  try {
+    const { search = "", page = 1, limit = 10 } = req.query;
+
+    const query = {
+      categoryName: { $regex: search, $options: "i" }, // case-insensitive search
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await Category.countDocuments(query);
+    const categories = await Category.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      result: categories,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "Categories retrieved successfully",
+      status: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Server error",
+    });
+  }
+};
 
 // Category By ID//
 const categoryById = async (req, res) => {
@@ -99,4 +130,4 @@ const deleteCategory = async (req, res) => {
     }
   });
 };
-module.exports = { createCategory, allCategories, categoryById, updateCategory, deleteCategory };
+module.exports = { createCategory, allCategories, categoryById, updateCategory, deleteCategory, allCategoriesFilter };

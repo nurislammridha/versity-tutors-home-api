@@ -44,6 +44,44 @@ const allSubCategories = async (req, res) => {
   }
 };
 
+//all Sub Category filter
+const allSubCategoriesFilter = async (req, res) => {
+  try {
+    const { search = null, filters = null, page = 1, limit = 10 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    let query = {};
+    // Search by multiple fields
+    if (search && search.length > 0) {
+      const regex = new RegExp(search, "i"); // Case-insensitive search
+      query.$or = [
+        { subCategoryName: regex },
+        { "categoryInfo.categoryName": regex }
+      ];
+    }
+    if (filters && filters.length > 0) {
+      query.categoryId = filters;
+    }
+    const total = await SubCategory.countDocuments(query);
+    const subCat = await SubCategory.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .populate('categoryInfo')
+
+    res.status(200).json({
+      result: subCat,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "Sub Cat retrieved successfully",
+      status: true,
+    });
+  } catch (error) {
+    console.log('error', error)
+    res.status(500).send("Server error");
+  }
+};
+
 //Sub Category By ID//
 const subCategoryById = async (req, res) => {
   await SubCategory.find({ _id: req.params.id }, (err, data) => {
@@ -115,4 +153,4 @@ const deleteSubCategory = async (req, res) => {
     }
   });
 };
-module.exports = { createSubCategory, allSubCategories, subCategoryById, subCategoryByCategory, updateSubCategory, deleteSubCategory };
+module.exports = { createSubCategory, allSubCategories, subCategoryById, subCategoryByCategory, updateSubCategory, deleteSubCategory, allSubCategoriesFilter };

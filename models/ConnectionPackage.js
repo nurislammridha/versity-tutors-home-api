@@ -13,20 +13,12 @@ const ConnectionPackageSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  connectionsBn: {
-    type: String,
-    required: true,
-    default: ""
-  },
+
   price: {
     type: Number,
     required: true,
   },
-  priceBn: {
-    type: String,
-    required: true,
-    default: ""
-  },
+
   isActive: {
     type: Boolean,
     default: true,

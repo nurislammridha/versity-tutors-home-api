@@ -31,5 +31,7 @@ const SubDistrictSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+}, {
+  timestamps: true, // ✅ This adds createdAt and updatedAt
 });
 module.exports = SubDistrict = mongoose.model("SubDistrict", SubDistrictSchema);

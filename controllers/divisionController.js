@@ -43,6 +43,35 @@ const allDivisions = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+const allDivisionsFIlter = async (req, res) => {
+  try {
+    const { search = "", page = 1, limit = 10 } = req.query;
+
+    const query = {
+      divisionName: { $regex: search, $options: "i" }, // case-insensitive search
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const total = await Division.countDocuments(query);
+    const divisions = await Division.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      result: divisions,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "Divisions retrieved successfully",
+      status: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Server error",
+    });
+  }
+};
 
 // Division By ID//
 const divisionById = async (req, res) => {
@@ -99,4 +128,4 @@ const deleteDivision = async (req, res) => {
     }
   });
 };
-module.exports = { createDivision, allDivisions, divisionById, updateDivision, deleteDivision };
+module.exports = { createDivision, allDivisions, divisionById, updateDivision, deleteDivision, allDivisionsFIlter };

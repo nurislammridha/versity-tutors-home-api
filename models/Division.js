@@ -13,5 +13,7 @@ const DivisionSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+}, {
+  timestamps: true, // ✅ This adds createdAt and updatedAt
 });
 module.exports = Division = mongoose.model("Division", DivisionSchema);
