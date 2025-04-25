@@ -71,7 +71,7 @@ const allSubDistrictFilter = async (req, res) => {
       total,
       currentPage: parseInt(page),
       totalPages: Math.ceil(total / parseInt(limit)),
-      message: "Sub Cat retrieved successfully",
+      message: "Sub District retrieved successfully",
       status: true,
     });
   } catch (error) {

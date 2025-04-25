@@ -42,7 +42,44 @@ const allAreas = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+//all area  filter
+const allAreaFilter = async (req, res) => {
+  try {
+    const { search = null, divisionId = null, districtId = null, subDistrictId = null, page = 1, limit = 10 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    let query = {};
+    // Search by multiple fields
+    if (search && search.length > 0) {
+      const regex = new RegExp(search, "i"); // Case-insensitive search
+      query.$or = [
+        { areaName: regex },
+      ];
+    }
 
+    if (divisionId && divisionId.length > 0) query.divisionId = divisionId;
+    if (districtId && districtId.length > 0) query.districtId = districtId;
+    if (subDistrictId && subDistrictId.length > 0) query.subDistrictId = subDistrictId;
+
+    const total = await Area.countDocuments(query);
+    const subCat = await Area.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .populate('divisionInfo districtInfo subDistrictInfo')
+
+    res.status(200).json({
+      result: subCat,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "Sub District retrieved successfully",
+      status: true,
+    });
+  } catch (error) {
+    console.log('error', error)
+    res.status(500).send("Server error");
+  }
+};
 //Area By ID//
 const areaById = async (req, res) => {
   await Area.find({ _id: req.params.id }, (err, data) => {
@@ -146,4 +183,4 @@ const deleteArea = async (req, res) => {
     }
   });
 };
-module.exports = { createArea, allAreas, areaById, areaByDivision, areaByDistrict, updateArea, deleteArea, areaBySubDistrict };
+module.exports = { createArea, allAreas, areaById, areaByDivision, areaByDistrict, updateArea, deleteArea, areaBySubDistrict, allAreaFilter };
