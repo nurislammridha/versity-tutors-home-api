@@ -43,7 +43,42 @@ const allDistricts = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+//all District filter
+const allDistrictFilter = async (req, res) => {
+  try {
+    const { search = null, filters = null, page = 1, limit = 10 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    let query = {};
+    // Search by multiple fields
+    if (search && search.length > 0) {
+      const regex = new RegExp(search, "i"); // Case-insensitive search
+      query.$or = [
+        { districtName: regex }
+      ];
+    }
+    if (filters && filters.length > 0) {
+      query.divisionId = filters;
+    }
+    const total = await District.countDocuments(query);
+    const subCat = await District.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .populate('divisionInfo')
 
+    res.status(200).json({
+      result: subCat,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "District get successfully",
+      status: true,
+    });
+  } catch (error) {
+    console.log('error', error)
+    res.status(500).send("Server error");
+  }
+};
 //District By ID//
 const districtById = async (req, res) => {
   await District.find({ _id: req.params.id }, (err, data) => {
@@ -115,4 +150,4 @@ const deleteDistrict = async (req, res) => {
     }
   });
 };
-module.exports = { createDistrict, allDistricts, districtById, districtByDivision, updateDistrict, deleteDistrict };
+module.exports = { createDistrict, allDistricts, districtById, districtByDivision, updateDistrict, deleteDistrict, allDistrictFilter };

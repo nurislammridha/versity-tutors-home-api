@@ -42,6 +42,43 @@ const allSubDistricts = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+//all Sub District  filter
+const allSubDistrictFilter = async (req, res) => {
+  try {
+    const { search = null, divisionId = null, districtId = null, page = 1, limit = 10 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    let query = {};
+    // Search by multiple fields
+    if (search && search.length > 0) {
+      const regex = new RegExp(search, "i"); // Case-insensitive search
+      query.$or = [
+        { subDistrictName: regex },
+      ];
+    }
+
+    if (divisionId && divisionId.length > 0) query.divisionId = divisionId;
+    if (districtId && districtId.length > 0) query.districtId = districtId;
+
+    const total = await SubDistrict.countDocuments(query);
+    const subCat = await SubDistrict.find(query)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .populate('divisionInfo districtInfo')
+
+    res.status(200).json({
+      result: subCat,
+      total,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      message: "Sub Cat retrieved successfully",
+      status: true,
+    });
+  } catch (error) {
+    console.log('error', error)
+    res.status(500).send("Server error");
+  }
+};
 
 //Sub District By ID//
 const subDistrictById = async (req, res) => {
@@ -130,4 +167,4 @@ const deleteSubDistrict = async (req, res) => {
     }
   });
 };
-module.exports = { createSubDistrict, allSubDistricts, subDistrictById, subDistrictByDivision, subDistrictByDistrict, updateSubDistrict, deleteSubDistrict };
+module.exports = { createSubDistrict, allSubDistricts, subDistrictById, subDistrictByDivision, subDistrictByDistrict, updateSubDistrict, deleteSubDistrict, allSubDistrictFilter };
