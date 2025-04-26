@@ -16,7 +16,8 @@ const createClient = async (req, res) => {
         let isPhone = false
         let isMail = false
         let otpObj = await OtpEmail.findOne({ email }) || {}
-        if (otp === otpObj?.otp) {
+        // if (otp === otpObj?.otp) { //change after real otp
+        if (otp === "123456") {
             let clientInfo = new Client({ firstName, lastName, email, phone, password, isPassword: true, isTutorAccount });
 
             // Hash password before saving in database
@@ -908,12 +909,16 @@ const filterClient = async (req, res) => {
                         { lastName: regex },
                         { tagline: regex },
                         { address: regex },
+                        { email: regex },
+                        { phone: regex },
+                        { whatsapp: regex },
                         { "divisionInfo.divisionName": regex },
                         { "districtInfo.districtName": regex },
                         { "subDistrictInfo.subDistrictName": regex },
                         { "areaInfo.areaName": regex },
-                        { "subjectCategoryInfo.categoryName": regex },
-                        { "subjectSubCategoryInfo.subCategoryName": regex },
+                        { "subject.categoryInfo.categoryName": regex },
+                        { "subject.subCategories.subCategoryInfo.subCategoryName": regex },
+                        { "education.institute": regex }
                     ]
                 }
             });
