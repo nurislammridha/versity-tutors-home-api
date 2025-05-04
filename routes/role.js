@@ -1,0 +1,14 @@
+const express = require("express");
+const router = express.Router();
+const adminAuth = require('../middleware/adminAuthMiddleware');
+const { createRole, roleById, updateRole, deleteRole, allRoles, allRolesByRoleType, allRolesFilter } = require("../controllers/roleController");
+
+router.route('/').post(createRole)
+router.route('/').get(allRoles)
+router.route('/filter').get(allRolesFilter)
+router.route('/role-type').get(allRolesByRoleType)
+router.route('/:id').get(roleById)
+router.route('/:id').put(adminAuth, updateRole)
+router.route('/:id').delete(adminAuth, deleteRole)
+
+module.exports = router;

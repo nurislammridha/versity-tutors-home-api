@@ -1,0 +1,147 @@
+const express = require("express");
+const Role = require("../models/Role");
+//@route POST api/admin
+//@desc Admin login
+//@access Public
+const createRole = async (req, res) => {
+    const { email } = req.body;
+    try {
+        let divName = await Role.findOne({ email });
+        //see if user exists
+        if (divName) {
+            return res.status(400).json({ message: "This user already exist by this email" });
+        }
+        let role = new Role(req.body);
+        await role.save();
+        res.status(200).json({
+            message: "Role inserted succesfully",
+            status: true,
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+};
+//all Role
+const allRoles = async (req, res) => {
+    try {
+        await Role.find((err, data) => {
+            if (err) {
+                res.status(500).json({
+                    error: "There was a server side error!",
+                });
+            } else {
+                res.status(200).json({
+                    result: data,
+                    message: "All Role are showing!",
+                    status: true,
+                });
+            }
+        });
+    } catch (error) {
+        res.status(500).send("Server error");
+    }
+};
+const allRolesFilter = async (req, res) => {
+    try {
+        const { search = "", page = 1, limit = 10 } = req.query;
+
+        const query = {
+            roleName: { $regex: search, $options: "i" }, // case-insensitive search
+        };
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        const total = await Role.countDocuments(query);
+        const roles = await Role.find(query)
+            .skip(skip)
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit));
+
+        res.status(200).json({
+            result: roles,
+            total,
+            currentPage: parseInt(page),
+            totalPages: Math.ceil(total / parseInt(limit)),
+            message: "Roles retrieved successfully",
+            status: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "Server error",
+        });
+    }
+};
+//All Role By roleType//
+const allRolesByRoleType = async (req, res) => {
+    const roleType = req.query.roleType;
+    await Role.find({ roleType }, (err, data) => {
+        if (err) {
+            res.status(500).json({
+                error: "There was a server side error!",
+            });
+        } else {
+            res.status(200).json({
+                result: data,
+                message: "All role by role type!",
+                status: true,
+            });
+        }
+    });
+};
+
+// Role By Id//
+const roleById = async (req, res) => {
+    await Role.find({ _id: req.params.id }, (err, data) => {
+        if (err) {
+            res.status(500).json({
+                error: "There was a server side error!",
+            });
+        } else {
+            let [obj] = data;
+            res.status(200).json({
+                result: obj,
+                message: "Role was inserted successfully!",
+                status: true,
+            });
+        }
+    });
+};
+
+//Update Role
+const updateRole = async (req, res) => {
+    await Role.updateOne(
+        { _id: req.params.id },
+        {
+            $set: req.body,
+        },
+        (err) => {
+            if (err) {
+                res.status(500).json({
+                    error: "There was a server side error!",
+                });
+            } else {
+                res.status(200).json({
+                    message: "Role were updated successfully!",
+                    status: true,
+                });
+            }
+        }
+    );
+};
+
+//delete Role
+const deleteRole = async (req, res) => {
+    await Role.deleteOne({ _id: req.params.id }, (err) => {
+        if (err) {
+            res.status(500).json({
+                error: "There was a server side error!",
+            });
+        } else {
+            res.status(200).json({
+                message: "Role was deleted successfully!",
+                status: true,
+            });
+        }
+    });
+};
+module.exports = { createRole, allRoles, roleById, updateRole, deleteRole, allRolesFilter, allRolesByRoleType };
