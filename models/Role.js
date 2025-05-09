@@ -64,6 +64,10 @@ const RoleSchema = new mongoose.Schema({
         default: {},
     },
 
+    isRegistered: {//for check first time login
+        type: Boolean,
+        default: false,
+    },
     isActive: {
         type: Boolean,
         default: true,

@@ -1,5 +1,7 @@
 const express = require("express");
 const Role = require("../models/Role");
+const jwt = require("jsonwebtoken");
+const keys = require('../config/key');
 //@route POST api/admin
 //@desc Admin login
 //@access Public
@@ -113,11 +115,11 @@ const roleById = async (req, res) => {
             let [obj] = data;
             res.status(200).json({
                 result: obj,
-                message: "Role was inserted successfully!",
+                message: "Role details!",
                 status: true,
             });
         }
-    });
+    }).populate('managerInfo');
 };
 
 //Update Role
@@ -157,4 +159,118 @@ const deleteRole = async (req, res) => {
         }
     });
 };
-module.exports = { createRole, allRoles, roleById, updateRole, deleteRole, allRolesFilter, allRolesByRoleType };
+//role registration
+const roleRegistration = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        let info = await Role.findOne({ email });
+
+        if (info) {
+            if (info.isRegistered) {
+                //all ready registered
+                return res.status(200).json({
+                    message: `You are already registered, please login`,
+                    result: "",
+                    status: false,
+                    isLogin: false
+                });
+            } else {
+                //registered process, update password
+                await Role.updateOne(
+                    { email },
+                    {
+                        $set: { password, isRegistered: true },
+                    },
+                    (err) => {
+                        if (err) {
+                            res.status(500).json({
+                                error: "There was a server side error!",
+                            });
+                        } else {
+                            //now finally login
+                            const payload = {
+                                email, password
+                            };
+                            jwt.sign(
+                                payload,
+                                keys.key,
+                                {
+                                    expiresIn: 31556926 // 1 year in seconds
+                                },
+                                (err, token) => {
+                                    return res.status(200).json({
+                                        message: `Your are successfully registered`,
+                                        result: info,
+                                        token: "Bearer " + token,
+                                        status: true,
+                                        isLogin: true
+                                    });
+                                }
+                            );
+
+                        }
+                    }
+                );
+            }
+
+        } else {
+            return res.status(200).json({
+                message: `Your email is n't found`,
+                result: "",
+                status: false,
+                isLogin: false
+            });
+        }
+
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+};
+//role Login
+const roleLogin = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        let info = await Role.findOne({ email, password });
+
+        if (info) {
+
+            //now finally login
+            const payload = {
+                email, password
+            };
+            jwt.sign(
+                payload,
+                keys.key,
+                {
+                    expiresIn: 31556926 // 1 year in seconds
+                },
+                (err, token) => {
+                    return res.status(200).json({
+                        message: `Your are successfully login`,
+                        result: info,
+                        token: "Bearer " + token,
+                        status: true,
+                        isLogin: true
+                    });
+                }
+            );
+
+
+        } else {
+            return res.status(200).json({
+                message: `Wrong credential`,
+                result: "",
+                status: false,
+                isLogin: false
+            });
+        }
+
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+    }
+};
+module.exports = { createRole, allRoles, roleById, updateRole, deleteRole, allRolesFilter, allRolesByRoleType, roleRegistration, roleLogin };

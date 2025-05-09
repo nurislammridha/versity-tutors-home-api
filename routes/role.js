@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const adminAuth = require('../middleware/adminAuthMiddleware');
-const { createRole, roleById, updateRole, deleteRole, allRoles, allRolesByRoleType, allRolesFilter } = require("../controllers/roleController");
+const { createRole, roleById, updateRole, deleteRole, allRoles, allRolesByRoleType, allRolesFilter, roleRegistration, roleLogin } = require("../controllers/roleController");
 
 router.route('/').post(createRole)
+router.route('/registration').post(roleRegistration)
+router.route('/login').post(roleLogin)
 router.route('/').get(allRoles)
 router.route('/filter').get(allRolesFilter)
 router.route('/role-type').get(allRolesByRoleType)
