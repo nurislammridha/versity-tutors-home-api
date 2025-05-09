@@ -42,33 +42,46 @@ const allRoles = async (req, res) => {
         res.status(500).send("Server error");
     }
 };
+//all role filter
 const allRolesFilter = async (req, res) => {
     try {
-        const { search = "", page = 1, limit = 10 } = req.query;
-
-        const query = {
-            roleName: { $regex: search, $options: "i" }, // case-insensitive search
-        };
-
+        const { search = null, filters = null, page = 1, limit = 10 } = req.query;
         const skip = (parseInt(page) - 1) * parseInt(limit);
+        let query = {};
+        // Search by multiple fields
+        if (search && search.length > 0) {
+            const regex = new RegExp(search, "i"); // Case-insensitive search
+            query.$or = [
+                { name: regex },
+                { gender: regex },
+                { email: regex },
+                { phone: regex },
+                { whatsapp: regex },
+                { roleType: regex },
+                { address: regex },
+            ];
+        }
+        if (filters && filters.length > 0) {
+            query.managerId = filters;
+        }
         const total = await Role.countDocuments(query);
-        const roles = await Role.find(query)
+        const subCat = await Role.find(query)
             .skip(skip)
             .sort({ createdAt: -1 })
-            .limit(parseInt(limit));
+            .limit(parseInt(limit))
+            .populate('managerInfo')
 
         res.status(200).json({
-            result: roles,
+            result: subCat,
             total,
             currentPage: parseInt(page),
             totalPages: Math.ceil(total / parseInt(limit)),
-            message: "Roles retrieved successfully",
+            message: "Role get successfully",
             status: true,
         });
     } catch (error) {
-        res.status(500).json({
-            error: "Server error",
-        });
+        console.log('error', error)
+        res.status(500).send("Server error");
     }
 };
 //All Role By roleType//
