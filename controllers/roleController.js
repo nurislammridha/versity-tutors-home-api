@@ -136,7 +136,7 @@ const updateRole = async (req, res) => {
                 });
             } else {
                 res.status(200).json({
-                    message: "Role were updated successfully!",
+                    message: "Data were updated successfully!",
                     status: true,
                 });
             }
@@ -163,7 +163,7 @@ const deleteRole = async (req, res) => {
 const roleRegistration = async (req, res) => {
     const { email, password } = req.body;
     try {
-        let info = await Role.findOne({ email });
+        let info = await Role.findOne({ email }).populate('managerInfo');
 
         if (info) {
             if (info.isRegistered) {
@@ -232,7 +232,7 @@ const roleRegistration = async (req, res) => {
 const roleLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
-        let info = await Role.findOne({ email, password });
+        let info = await Role.findOne({ email, password }).populate('managerInfo');
 
         if (info) {
 

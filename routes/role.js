@@ -10,7 +10,7 @@ router.route('/').get(allRoles)
 router.route('/filter').get(allRolesFilter)
 router.route('/role-type').get(allRolesByRoleType)
 router.route('/:id').get(roleById)
-router.route('/:id').put(adminAuth, updateRole)
+router.route('/:id').put(updateRole)
 router.route('/:id').delete(adminAuth, deleteRole)
 
 module.exports = router;
