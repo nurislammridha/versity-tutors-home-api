@@ -763,22 +763,6 @@ const filterClient = async (req, res) => {
                 }
             },
             { $unwind: { path: '$areaInfo', preserveNullAndEmptyArrays: true } },
-            // {
-            //     $lookup: {
-            //         from: 'categories',
-            //         localField: 'subject.categoryInfo',
-            //         foreignField: '_id',
-            //         as: 'categoryInfoData'
-            //     }
-            // },
-            // {
-            //     $lookup: {
-            //         from: 'subcategories',
-            //         localField: 'subject.subCategories.subCategoryInfo',
-            //         foreignField: '_id',
-            //         as: 'subjectSubCategoryInfo'
-            //     }
-            // }
         );
         //new code subjects
         // Group subCategories back into array for each subject
@@ -944,7 +928,7 @@ const filterClient = async (req, res) => {
             if (filters.subCategoryId && Array.isArray(filters.subCategoryId) && filters.subCategoryId.length > 0) {
                 matchStage["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
             }
-
+            if (filters.reviewStatus) matchStage.reviewStatus = filters.reviewStatus;
             // Boolean filters
             const boolFields = [
                 'isTeachingLocationOnline', 'isTeachingLocationOffline',

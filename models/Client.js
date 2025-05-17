@@ -283,7 +283,7 @@ const ClientSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    isRequestToApprove: {
+    isRequestToApprove: {//will remove
         type: Boolean,
         default: false,
     },
@@ -291,5 +291,26 @@ const ClientSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    isAssigned: {
+        type: Boolean,
+        default: true,
+    },
+    reviewStatus: {
+        type: String, // e.g., 'created','requestToApprove', 'under_review', 'approved', 'rejected'
+        default: 'created',
+        enum: ['created', 'requestInitiated', 'underReview', 'approved', 'rejected', 'missingDoc'],
+    },
+    assignedModerator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Role', // Moderator assigned for review
+        default: null,
+    },
+    moderationHistory: [{
+        moderator: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
+        action: String, // e.g., 'claimed', 'approved', 'rejected'
+        timestamp: { type: Date, default: Date.now },
+        note: String
+    }]
+
 }, { timestamps: true });
 module.exports = Client = mongoose.model("Client", ClientSchema);
