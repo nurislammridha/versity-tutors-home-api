@@ -95,25 +95,62 @@ const moderationhistoryById = async (req, res) => {
 };
 
 //Update ModerationHistory
+// const updateModerationHistory = async (req, res) => {
+//   await ModerationHistory.updateOne(
+//     { _id: req.params.id },
+//     {
+//       $set: req.body,
+//     },
+//     (err) => {
+//       if (err) {
+//         res.status(500).json({
+//           error: "There was a server side error!",
+//         });
+//       } else {
+//         res.status(200).json({
+//           message: "ModerationHistory were updated successfully!",
+//           status: true,
+//         });
+//       }
+//     }
+//   );
+// };
 const updateModerationHistory = async (req, res) => {
-  await ModerationHistory.updateOne(
-    { _id: req.params.id },
-    {
-      $set: req.body,
-    },
-    (err) => {
-      if (err) {
-        res.status(500).json({
-          error: "There was a server side error!",
-        });
-      } else {
-        res.status(200).json({
-          message: "ModerationHistory were updated successfully!",
-          status: true,
-        });
-      }
+  try {
+    const { statusHistory, ...otherUpdates } = req.body;
+
+    const updatePayload = {};
+
+    // Add non-array fields with $set
+    if (Object.keys(otherUpdates).length > 0) {
+      updatePayload.$set = otherUpdates;
     }
-  );
+
+    // Append new status to the statusHistory array if provided
+    if (statusHistory) {
+      updatePayload.$push = {
+        statusHistory: {
+          $each: Array.isArray(statusHistory) ? statusHistory : [statusHistory],
+        },
+      };
+    }
+
+    await ModerationHistory.updateOne(
+      { _id: req.params.id },
+      updatePayload
+    );
+
+    res.status(200).json({
+      message: "ModerationHistory was updated successfully!",
+      status: true,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "There was a server-side error!",
+    });
+  }
 };
 
 //delete ModerationHistory

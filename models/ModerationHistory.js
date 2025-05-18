@@ -41,9 +41,21 @@ const ModerationHistorySchema = new mongoose.Schema({
     lastStatus: {
         type: String,
         required: false,
-        default: "underReview",
-        enum: ['underReview', 'approved', 'rejected'],
+        default: "underReview"
     },
+    statusHistory: [
+        {
+            status: {
+                type: String,
+                required: false,
+            },
+            comment: {
+                type: String,
+                required: false,
+            },
+            statusTime: { type: Date, default: Date.now }
+        }
+    ],
     comment: {
         type: String,
         required: false,

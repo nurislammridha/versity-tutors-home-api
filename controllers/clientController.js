@@ -7,6 +7,7 @@ const otpGenerator = require('otp-generator');
 const OTP = require('../models/OtpEmail');
 const OtpEmail = require("../models/OtpEmail");
 const ForgetOtpEmail = require("../models/ForgetOtpEmail");
+const mongoose = require('mongoose');
 //@route POST api/admin
 //@desc Client signup
 //@access Public
@@ -876,6 +877,22 @@ const filterClient = async (req, res) => {
                 newRoot: '$clientDoc'
             }
         });
+        pipeline.push(
+            {
+                $lookup: {
+                    from: 'moderationhistories', // collection name (plural and lowercase)
+                    localField: 'moderationHistory',
+                    foreignField: '_id',
+                    as: 'moderationHistory'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$moderationHistory',
+                    preserveNullAndEmptyArrays: true
+                }
+            }
+        );
 
 
         //new code subjects
@@ -929,6 +946,18 @@ const filterClient = async (req, res) => {
                 matchStage["subject.subCategories.subCategoryId"] = { $in: filters.subCategoryId };
             }
             if (filters.reviewStatus) matchStage.reviewStatus = filters.reviewStatus;
+            // Filter clients that are not yet assigned to any moderator
+            if (filters.onlyUnassignedModerator) {
+                matchStage.$or = [
+                    { assignedModerator: { $exists: false } },
+                    { assignedModerator: null }
+                ];
+            }
+
+            // Optional: if you want to filter by assigned moderator
+            if (filters.moderatorId) {
+                matchStage.assignedModerator = mongoose.Types.ObjectId(filters.moderatorId);
+            }
             // Boolean filters
             const boolFields = [
                 'isTeachingLocationOnline', 'isTeachingLocationOffline',

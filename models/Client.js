@@ -291,26 +291,35 @@ const ClientSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    isAssigned: {
-        type: Boolean,
-        default: true,
-    },
+    // isAssigned: {
+    //     type: Boolean,
+    //     default: true,
+    // },
     reviewStatus: {
         type: String, // e.g., 'created','requestToApprove', 'under_review', 'approved', 'rejected'
         default: 'created',
-        enum: ['created', 'requestInitiated', 'underReview', 'approved', 'rejected', 'missingDoc'],
+        enum: ['created', 'requestInitiated', 'underReview', 'approved', 'rejected', 'sendForReview', 'receiveForReview'],
+    },
+    comment: {//reviewComment
+        type: String,
+        default: false,
     },
     assignedModerator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Role', // Moderator assigned for review
         default: null,
     },
-    moderationHistory: [{
-        moderator: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
-        action: String, // e.g., 'claimed', 'approved', 'rejected'
-        timestamp: { type: Date, default: Date.now },
-        note: String
-    }]
+    moderationHistory: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ModerationHistory', // Moderator assigned for review
+        default: false,
+    },
+    // moderationHistory: [{
+    //     moderator: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
+    //     action: String, // e.g., 'claimed', 'approved', 'rejected'
+    //     timestamp: { type: Date, default: Date.now },
+    //     note: String
+    // }]
 
 }, { timestamps: true });
 module.exports = Client = mongoose.model("Client", ClientSchema);
