@@ -43,6 +43,10 @@ const ModerationHistorySchema = new mongoose.Schema({
         required: false,
         default: "underReview"
     },
+    managerCheckingComment: {
+        type: String,
+        required: false,
+    },
     statusHistory: [
         {
             status: {
@@ -52,6 +56,7 @@ const ModerationHistorySchema = new mongoose.Schema({
             comment: {
                 type: String,
                 required: false,
+                default: ""
             },
             statusTime: { type: Date, default: Date.now }
         }

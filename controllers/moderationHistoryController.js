@@ -78,21 +78,32 @@ const allModerationHistorysFIlter = async (req, res) => {
 
 // ModerationHistory By ID//
 const moderationhistoryById = async (req, res) => {
-  await ModerationHistory.find({ _id: req.params.id }, (err, data) => {
-    if (err) {
-      res.status(500).json({
-        error: "There was a server side error!",
-      });
-    } else {
-      let [obj] = data;
-      res.status(200).json({
-        result: obj,
-        message: "ModerationHistory was inserted successfully!",
-        status: true,
+  try {
+    const data = await ModerationHistory.findById(req.params.id)
+      .populate('clientInfo')
+      .populate('roleInfo');
+
+    if (!data) {
+      return res.status(404).json({
+        error: "ModerationHistory not found!",
+        status: false,
       });
     }
-  });
+
+    res.status(200).json({
+      result: data,
+      message: "ModerationHistory fetched successfully!",
+      status: true,
+    });
+  } catch (err) {
+    console.error("Error fetching moderation history:", err);
+    res.status(500).json({
+      error: "There was a server side error!",
+      status: false,
+    });
+  }
 };
+
 
 //Update ModerationHistory
 // const updateModerationHistory = async (req, res) => {
