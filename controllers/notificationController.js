@@ -81,29 +81,125 @@ const notificationByClient = async (req, res) => {
   }
 };
 //Notification By client ID//
+// const notificationByAdmin = async (req, res) => {
+//   try {
+//     const notifications = await Notification.find({ isAdmin: true })
+//       .populate('clientInfo')
+//       .sort({ createdAt: -1 }); // Sort by descending order
+
+//     const unreadCount = await Notification.countDocuments({
+//       isAdmin: true,
+//       isClicked: false
+//     });
+
+//     res.status(200).json({
+//       result: notifications,
+//       unreadCount: unreadCount,
+//       message: "Notifications retrieved successfully!",
+//       status: true,
+//     });
+//   } catch (err) {
+//     res.status(500).json({
+//       error: "There was a server-side error!",
+//     });
+//   }
+// };
+// const notificationByAdmin = async (req, res) => {
+//   try {
+//     const { roleId } = req.body; // or req.body / req.params — wherever you're sending admin's roleId from
+//     console.log('roleId', roleId)
+//     const notifications = await Notification.find({
+//       isAdmin: true,
+//       $or: [
+//         { roleId: roleId },          // specific to this admin role
+//         { roleId: null },            // general notifications for all admins
+//         { roleId: { $exists: false } } // roleId not defined at all
+//       ]
+//     })
+//       .populate('clientInfo')
+//       .sort({ createdAt: -1 });
+
+//     const unreadCount = await Notification.countDocuments({
+//       isAdmin: true,
+//       isClicked: false,
+//       $or: [
+//         { roleId: roleId },
+//         { roleId: null },
+//         { roleId: { $exists: false } }
+//       ]
+//     });
+
+//     res.status(200).json({
+//       result: notifications,
+//       unreadCount,
+//       message: "Notifications retrieved successfully!",
+//       status: true,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({
+//       error: "There was a server-side error!",
+//     });
+//   }
+// };
+const mongoose = require("mongoose");
+
 const notificationByAdmin = async (req, res) => {
   try {
-    const notifications = await Notification.find({ isAdmin: true })
-      .populate('clientInfo')
-      .sort({ createdAt: -1 }); // Sort by descending order
+    const { roleId } = req.body;
+    const roleObjectId = new mongoose.Types.ObjectId(roleId); // ✅ Convert to ObjectId
 
-    const unreadCount = await Notification.countDocuments({
+    // Fetch notifications
+    const notifications = await Notification.find({
       isAdmin: true,
-      isClicked: false
-    });
+      $or: [
+        { roleId: roleObjectId },
+        { roleId: null },
+        { roleId: { $exists: false } }
+      ]
+    })
+      .populate("clientInfo")
+      .sort({ createdAt: -1 });
+
+    // Aggregation for unreadCount
+    const unreadAggregation = await Notification.aggregate([
+      {
+        $match: {
+          isAdmin: true,
+          $or: [
+            { roleId: roleObjectId },
+            { roleId: null },
+            { roleId: { $exists: false } }
+          ],
+          $or: [
+            { clickIds: { $exists: false } }, // If clickIds doesn't exist
+            { clickIds: { $size: 0 } },        // If clickIds is empty
+            { clickIds: { $not: { $elemMatch: { $eq: roleObjectId } } } } // Not clicked by this role
+          ]
+        }
+      },
+      {
+        $count: "unreadCount"
+      }
+    ]);
+
+    const unreadCount = unreadAggregation[0]?.unreadCount || 0;
 
     res.status(200).json({
       result: notifications,
-      unreadCount: unreadCount,
+      unreadCount,
       message: "Notifications retrieved successfully!",
       status: true,
     });
+
   } catch (err) {
+    console.error(err);
     res.status(500).json({
       error: "There was a server-side error!",
     });
   }
 };
+
 
 
 //Update notification
@@ -163,6 +259,63 @@ const notificationsAsClickedByAdmin = async (req, res) => {
     });
   }
 };
+const notificationsAsClickedByRoleId = async (req, res) => {
+  const { id } = req.params;
+  console.log('roleId:', id);
+
+  let result = { modifiedCount: 0 }; // default value to prevent crash
+
+  try {
+    if (id) {
+      result = await Notification.updateMany(
+        { isAdmin: true },
+        {
+          $addToSet: { clickIds: id }
+        }
+      );
+    }
+
+    res.status(200).json({
+      message: "All notifications marked as clicked!",
+      modifiedCount: result.modifiedCount,
+      status: true,
+    });
+  } catch (err) {
+    console.error('Server error:', err);
+    res.status(500).json({
+      error: "There was a server-side error!",
+    });
+  }
+};
+const notificationsAsSeenByRoleId = async (req, res) => {
+  const { notificationId, roleId } = req.body;
+
+
+  let result = { modifiedCount: 0 }; // default value to prevent crash
+
+  try {
+
+    result = await Notification.updateOne(
+      { _id: notificationId },
+      {
+        $addToSet: { seenIds: roleId }
+      }
+    );
+
+
+    res.status(200).json({
+      message: "All notifications marked as clicked!",
+      modifiedCount: result.modifiedCount,
+      status: true,
+    });
+  } catch (err) {
+    console.error('Server error:', err);
+    res.status(500).json({
+      error: "There was a server-side error!",
+    });
+  }
+};
+
 
 //delete notification
 const deleteNotification = async (req, res) => {
@@ -179,4 +332,4 @@ const deleteNotification = async (req, res) => {
     }
   });
 };
-module.exports = { createNotification, allNotifications, notificationById, notificationByClient, notificationByAdmin, updateNotification, notificationsAsClickedByAdmin, notificationsAsClickedByClientInfo, deleteNotification };
+module.exports = { createNotification, allNotifications, notificationById, notificationByClient, notificationByAdmin, updateNotification, notificationsAsClickedByAdmin, notificationsAsClickedByClientInfo, deleteNotification, notificationsAsClickedByRoleId, notificationsAsSeenByRoleId };

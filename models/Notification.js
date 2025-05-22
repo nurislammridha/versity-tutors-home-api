@@ -13,6 +13,16 @@ const NotificationSchema = new mongoose.Schema({
     required: false,
     ref: 'Client'
   },
+  roleId: {
+    type: String,
+    required: false,
+    ref: 'Role'
+  },
+  roleInfo: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: false,
+    ref: 'Role'
+  },
   isSeen: {//click at single and seen details
     type: Boolean,
     default: false,
@@ -21,10 +31,23 @@ const NotificationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  clickIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Role",
+  }],
+  seenIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Role",
+  }],
   isAdmin: {
     type: Boolean,
     default: false,
   },
+  isClicked: {
+    type: Boolean,
+    default: false,
+  },
+
   isActive: {
     type: Boolean,
     default: true,
