@@ -21,7 +21,7 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, "123456789");
 
-    if (decoded.email !== "xyz@google.com") {
+    if (decoded.email !== "admin@versity.com") {
       return next(new ErrorResponse("Admin email invalid", 404));
     } else if (decoded.password !== "123456") {
       return next(new ErrorResponse("Admin password incorrect", 404));

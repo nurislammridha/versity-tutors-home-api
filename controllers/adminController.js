@@ -6,7 +6,7 @@ const keys = require('../config/key');
 const adminLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
-        if (email === "xyz@google.com") {
+        if (email === "admin@versity.com") {
             if (password === "123456") {
                 const payload = {
                     email, password
