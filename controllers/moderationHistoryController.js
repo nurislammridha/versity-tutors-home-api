@@ -80,7 +80,13 @@ const allModerationHistorysFIlter = async (req, res) => {
 const moderationhistoryById = async (req, res) => {
   try {
     const data = await ModerationHistory.findById(req.params.id)
-      .populate('clientInfo')
+      .populate({
+        path: 'clientInfo',
+        populate: {
+          path: 'moderationHistory',
+          model: 'ModerationHistory'
+        }
+      })
       .populate('roleInfo');
 
     if (!data) {

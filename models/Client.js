@@ -312,7 +312,7 @@ const ClientSchema = new mongoose.Schema({
     moderationHistory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ModerationHistory', // Moderator assigned for review
-        default: false,
+        default: null,
     },
     // moderationHistory: [{
     //     moderator: { type: mongoose.Schema.Types.ObjectId, ref: 'Role' },
