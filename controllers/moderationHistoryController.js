@@ -41,28 +41,69 @@ const allModerationHistorys = async (req, res) => {
 };
 const allModerationHistorysFIlter = async (req, res) => {
   try {
-    const { search = "", page = 1, limit = 10, managerId = null } = req.query;
-    let query = {};
-    if (search && search.length > 0) {
-      // const regex = new RegExp(search, "i"); // Case-insensitive search
-      // query.$or = [
-      //   { districtName: regex }
-      // ];
-    }
+    const { search = "", page = 1, limit = 10, managerId = null, isTutorAccount } = req.query;
+
+    const matchStage = {};
+
     if (managerId && managerId.length > 0) {
-      query.managerId = managerId;
+      matchStage.managerId = managerId;
     }
-    // console.log('query', query)
+
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    const total = await ModerationHistory.countDocuments(query);
-    const moderationhistorys = await ModerationHistory.find(query)
-      .skip(skip)
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .populate('clientInfo roleInfo')
-    // console.log('moderationhistorys', moderationhistorys)
+
+    const pipeline = [
+      {
+        $lookup: {
+          from: "clients", // must match the collection name in MongoDB
+          localField: "clientInfo",
+          foreignField: "_id",
+          as: "clientInfo"
+        }
+      },
+      {
+        $unwind: {
+          path: "$clientInfo",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "roles",
+          localField: "roleInfo",
+          foreignField: "_id",
+          as: "roleInfo"
+        }
+      },
+      {
+        $unwind: {
+          path: "$roleInfo",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+    ];
+
+    if (typeof isTutorAccount !== 'undefined') {
+      matchStage["clientInfo.isTutorAccount"] = isTutorAccount === 'true';
+    }
+
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    // Count documents
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await ModerationHistory.aggregate(countPipeline);
+    const total = countResult[0]?.total || 0;
+
+    // Paginate
+    pipeline.push({ $sort: { createdAt: -1 } });
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: parseInt(limit) });
+
+    const results = await ModerationHistory.aggregate(pipeline);
+
     res.status(200).json({
-      result: moderationhistorys,
+      result: results,
       total,
       currentPage: parseInt(page),
       totalPages: Math.ceil(total / parseInt(limit)),
@@ -70,11 +111,52 @@ const allModerationHistorysFIlter = async (req, res) => {
       status: true,
     });
   } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({
       error: "Server error",
     });
   }
 };
+
+// const allModerationHistorysFIlter = async (req, res) => {
+//   try {
+//     const { search = "", page = 1, limit = 10, managerId = null, isTutorAccount } = req.query;
+//     let query = {};
+//     if (search && search.length > 0) {
+//       // const regex = new RegExp(search, "i"); // Case-insensitive search
+//       // query.$or = [
+//       //   { districtName: regex }
+//       // ];
+//     }
+//     if (managerId && managerId.length > 0) {
+//       query.managerId = managerId;
+//     }
+//     if (isTutorAccount) {
+//       query.isTutorAccount = isTutorAccount;
+//     }
+//     // console.log('query', query)
+//     const skip = (parseInt(page) - 1) * parseInt(limit);
+//     const total = await ModerationHistory.countDocuments(query);
+//     const moderationhistorys = await ModerationHistory.find(query)
+//       .skip(skip)
+//       .sort({ createdAt: -1 })
+//       .limit(parseInt(limit))
+//       .populate('clientInfo roleInfo')
+//     // console.log('moderationhistorys', moderationhistorys)
+//     res.status(200).json({
+//       result: moderationhistorys,
+//       total,
+//       currentPage: parseInt(page),
+//       totalPages: Math.ceil(total / parseInt(limit)),
+//       message: "ModerationHistorys retrieved successfully",
+//       status: true,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       error: "Server error",
+//     });
+//   }
+// };
 
 // ModerationHistory By ID//
 const moderationhistoryById = async (req, res) => {
