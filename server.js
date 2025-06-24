@@ -38,6 +38,7 @@ app.use("/v1/document", require("./routes/document"));
 app.use("/v1/notification", require("./routes/notification"));
 app.use("/v1/role", require("./routes/role"));
 app.use("/v1/moderationHistory", require("./routes/moderationHistory"));
+app.use("/v1/institute-type", require("./routes/instituteType"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
