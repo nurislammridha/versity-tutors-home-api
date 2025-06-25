@@ -24,6 +24,18 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
+    additionalPhone: {
+        type: String,
+        require: false,
+    },
+    religion: {
+        type: String,
+        require: false,
+    },
+    language: {
+        type: String,
+        require: false,
+    },
     website: {
         type: String,
         require: false,
@@ -74,6 +86,31 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
+    fatherName: {
+        type: String,
+        require: false,
+    },
+    fatherPhone: {
+        type: String,
+        require: false,
+    },
+    motherName: {
+        type: String,
+        require: false,
+    },
+    motherPhone: {
+        type: String,
+        require: false,
+    },
+    localGuardianPhone: {
+        type: String,
+        require: false,
+    },
+    guardianRelationship: {
+        type: String,
+        require: false,
+    },
+    //current address
     divisionId: {
         type: String,
         require: false,
@@ -115,6 +152,51 @@ const ClientSchema = new mongoose.Schema({
         require: false,
     },
     zipCode: {
+        type: String,
+        require: false,
+    },
+    //permanent address
+    permanentDivisionId: {
+        type: String,
+        require: false,
+    },
+    permanentDivisionInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: false,
+        ref: 'Division'
+    },
+    permanentDistrictId: {
+        type: String,
+        require: false,
+    },
+    permanentDistrictInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: false,
+        ref: 'District'
+    },
+    permanentSubDistrictId: {
+        type: String,
+        require: false,
+    },
+    permanentSubDistrictInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: false,
+        ref: 'SubDistrict'
+    },
+    permanentAreaId: {
+        type: String,
+        require: false,
+    },
+    permanentAreaInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        require: false,
+        ref: 'Area'
+    },
+    permanentAddress: {
+        type: String,
+        require: false,
+    },
+    permanentZipCode: {
         type: String,
         require: false,
     },
