@@ -7,7 +7,7 @@ router.route('/').post(createDepartmentName)
 router.route('/').get(allDepartmentNames)
 router.route('/filter').get(allDepartmentNamesFilter)
 router.route('/:id').get(departmentNameById)
-router.route('/by-department-type/:id').get(departmentNameByStudyType)
+router.route('/by-study-type/:id').get(departmentNameByStudyType)
 router.route('/:id').put(updateDepartmentName)
 router.route('/:id').delete(deleteDepartmentName)
 

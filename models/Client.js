@@ -2,228 +2,300 @@ const mongoose = require("mongoose");
 const ClientSchema = new mongoose.Schema({
     firstName: {
         type: String,
-        require: true,
+        required: true,
     },
     lastName: {
         type: String,
-        require: true,
+        required: true,
     },
     gender: {
         type: String,
-        require: false,
+        required: false,
     },
     email: {
         type: String,
-        require: false,
+        required: false,
     },
     password: {
         type: String,
-        require: false,
+        required: false,
     },
     phone: {
         type: String,
-        require: false,
+        required: false,
     },
     additionalPhone: {
         type: String,
-        require: false,
+        required: false,
     },
     religion: {
         type: String,
-        require: false,
+        required: false,
     },
-    language: {
-        type: String,
-        require: false,
-    },
+    language: [{
+        label: { type: String, required: false },
+        value: { type: String, required: false },
+    }],
     website: {
         type: String,
-        require: false,
+        required: false,
     },
     whatsapp: {
         type: String,
-        require: false,
+        required: false,
     },
     skype: {
         type: String,
-        require: false,
+        required: false,
     },
     facebook: {
         type: String,
-        require: false,
+        required: false,
     },
     twitter: {
         type: String,
-        require: false,
+        required: false,
     },
     linkedin: {
         type: String,
-        require: false,
+        required: false,
     },
     dribble: {
         type: String,
-        require: false,
+        required: false,
     },
     avatar: {
         url: {
             type: String,
-            require: false,
+            required: false,
         },
         publicId: {
             type: String,
-            require: false,
+            required: false,
         }
     },
     grade: {
         type: String,
-        require: false,
+        required: false,
     },
     hourlyFee: {
         type: Number,
-        require: false,
+        required: false,
     },
     tagline: {
         type: String,
-        require: false,
+        required: false,
     },
     fatherName: {
         type: String,
-        require: false,
+        required: false,
     },
     fatherPhone: {
         type: String,
-        require: false,
+        required: false,
     },
     motherName: {
         type: String,
-        require: false,
+        required: false,
     },
     motherPhone: {
         type: String,
-        require: false,
+        required: false,
     },
     localGuardianPhone: {
         type: String,
-        require: false,
+        required: false,
     },
     guardianRelationship: {
         type: String,
-        require: false,
+        required: false,
     },
     //current address
     divisionId: {
         type: String,
-        require: false,
+        required: false,
     },
     divisionInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'Division'
     },
     districtId: {
         type: String,
-        require: false,
+        required: false,
     },
     districtInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'District'
     },
     subDistrictId: {
         type: String,
-        require: false,
+        required: false,
     },
     subDistrictInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'SubDistrict'
     },
     areaId: {
         type: String,
-        require: false,
+        required: false,
     },
     areaInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'Area'
     },
     address: {
         type: String,
-        require: false,
+        required: false,
     },
     zipCode: {
         type: String,
-        require: false,
+        required: false,
     },
     //permanent address
     permanentDivisionId: {
         type: String,
-        require: false,
+        required: false,
     },
     permanentDivisionInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'Division'
     },
     permanentDistrictId: {
         type: String,
-        require: false,
+        required: false,
     },
     permanentDistrictInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'District'
     },
     permanentSubDistrictId: {
         type: String,
-        require: false,
+        required: false,
     },
     permanentSubDistrictInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'SubDistrict'
     },
     permanentAreaId: {
         type: String,
-        require: false,
+        required: false,
     },
     permanentAreaInfo: {
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'Area'
     },
     permanentAddress: {
         type: String,
-        require: false,
+        required: false,
     },
     permanentZipCode: {
         type: String,
-        require: false,
+        required: false,
     },
     languageId: [{
         type: String,
-        require: false,
+        required: false,
     }],
     languageInfo: [{
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         ref: 'Language'
     }],
     tutorBriefIntroduction: {
         type: String,
-        require: false,
+        required: false,
         default: ""
     },
+    //new education info START
+    sscInstituteName: { type: String, required: false },
+    sscMedium: { type: String, required: false },
+    sscGroup: { type: String, required: false },
+    sscSession: { type: String, required: false },
+    sscPassingYear: { type: String, required: false },
+    sscResult: { type: String, required: false },
+
+    hscInstituteName: { type: String, required: false },
+    hscMedium: { type: String, required: false },
+    hscGroup: { type: String, required: false },
+    hscSession: { type: String, required: false },
+    hscPassingYear: { type: String, required: false },
+    hscResult: { type: String, required: false },
+
+    bachelorInstituteType: { type: String, required: false },
+    bachelorInstituteTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteType' },
+    bachelorInstituteName: { type: String, required: false },
+    bachelorInstituteNameId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteName' },
+    bachelorStudyType: { type: String, required: false },
+    bachelorStudyTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'StudyType' },
+    bachelorDepartment: { type: String, required: false },
+    bachelorDepartmentId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'DepartmentName' },
+    bachelorMedium: { type: String, required: false },
+    bachelorSession: { type: String, required: false },
+    bachelorPassingYear: { type: String, required: false },
+    bachelorCgpa: { type: String, required: false },
+
+    postInstituteType: { type: String, required: false },
+    postInstituteTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteType' },
+    postInstituteName: { type: String, required: false },
+    postInstituteNameId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteName' },
+    postStudyType: { type: String, required: false },
+    postStudyTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'StudyType' },
+    postDepartment: { type: String, required: false },
+    postDepartmentId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'DepartmentName' },
+    postMedium: { type: String, required: false },
+    postSession: { type: String, required: false },
+    postPassingYear: { type: String, required: false },
+    postCgpa: { type: String, required: false },
+    //new education info END
+    //new tuition info START
+
+    //new tuition info END
+    tuitionInfos: [{
+        divisionId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'Division' },
+        districtId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'District' },
+        subDistrictId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SubDistrict' },
+        areasId: [{ type: mongoose.Schema.Types.ObjectId, required: false, ref: 'Area' }],
+        detailsAddress: { type: String, required: false },
+        classId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'Category' },
+        medium: { type: String, required: false },
+        group: { type: String, required: false },
+        subjectsId: [{ type: mongoose.Schema.Types.ObjectId, required: false, ref: 'SubCategory' }],
+        daysPerWeek: [{ label: { type: String, required: false }, value: { type: String, required: false } }],
+        daysPerMonth: [{ label: { type: String, required: false }, value: { type: String, required: false } }],
+        timeDuration: [{ label: { type: String, required: false }, value: { type: String, required: false } }],
+        timeShift: [{ label: { type: String, required: false }, value: { type: String, required: false } }],
+        studentGender: { type: String, required: false },
+        tuitionExperience: { type: String, required: false },
+        tuitionExperienceLabel: { type: String, required: false },
+        expectedSalary: { type: String, required: false },
+        expectedSalaryLabel: { type: String, required: false },
+        isStudentHome: { type: Boolean, required: false, default: false },
+        isMyHome: { type: Boolean, required: false, default: false },
+        isOnline: { type: Boolean, required: false, default: false },
+        isGroupStudy: { type: Boolean, required: false, default: false },
+        isTakeDemoClass: { type: Boolean, required: false, default: true },
+        demoClass: { type: String, required: false },
+        demoClassStyle: { type: String, required: false },
+        demoClassPricing: { type: String, required: false }
+    }],
     unlockInfo: [
         {
             type: String,
-            require: false,
+            required: false,
             // default:[]
         }
     ],
     wishList: [{
         type: mongoose.Schema.Types.ObjectId,
-        require: false,
+        required: false,
         // default:[],
         ref: 'Client'
     }],
@@ -231,52 +303,52 @@ const ClientSchema = new mongoose.Schema({
         {
             degree: {
                 type: String,
-                require: false,
+                required: false,
             },
             institute: {
                 type: String,
-                require: false,
+                required: false,
             },
             location: {
                 type: String,
-                require: false,
+                required: false,
             },
             startDate: {
                 type: String,
-                require: false,
+                required: false,
             },
             endDate: {
                 type: String,
-                require: false,
+                required: false,
             },
             description: {
                 type: String,
-                require: false,
+                required: false,
             },
             isOngoing: {
                 type: Boolean,
-                require: false,
+                required: false,
             },
         }
     ],
     subject: [{
         categoryId: {
             type: String,
-            require: false,
+            required: false,
         },
         categoryInfo: {
             type: mongoose.Schema.Types.ObjectId,
-            required: false,
+            requiredd: false,
             ref: 'Category'
         },
         subCategories: [{
             subCategoryId: {
                 type: String,
-                require: false,
+                required: false,
             },
             subCategoryInfo: {
                 type: mongoose.Schema.Types.ObjectId,
-                require: false,
+                required: false,
                 ref: 'SubCategory'
             }
         }]
@@ -284,37 +356,37 @@ const ClientSchema = new mongoose.Schema({
     tutorCalender: [{
         day: {
             type: String,
-            require: false,
+            required: false,
         },
         title: {
             type: String,
-            require: false,
+            required: false,
         },
         startTime: {
             type: String,
-            require: false,
+            required: false,
         },
         endTime: {
             type: String,
-            require: false,
+            required: false,
         },
         breakTime: {
             type: String,
-            require: false,
+            required: false,
         },
         duration: {
             type: String,
-            require: false,
+            required: false,
         },
         noAppointSpaces: {
             type: String,
-            require: false,
+            required: false,
             default: "-1"
         },
     }],
     isPassword: {
         type: Boolean,
-        require: false,
+        required: false,
         default: false
     },
     googleId: {
