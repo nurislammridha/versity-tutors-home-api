@@ -491,7 +491,13 @@ const allClientList = async (req, res) => {
 // client By ID//
 const allClientById = async (req, res) => {
     const clients = await Client.find({ _id: req.params.id })
-        .populate("divisionInfo districtInfo subDistrictInfo areaInfo subject.categoryInfo subject.subCategories.subCategoryInfo wishList")
+        .populate("divisionInfo districtInfo subDistrictInfo areaInfo permanentDivisionInfo permanentDistrictInfo permanentSubDistrictInfo permanentAreaInfo bachelorInstituteTypeId bachelorInstituteNameId bachelorStudyTypeId bachelorDepartmentId postInstituteTypeId postInstituteNameId postStudyTypeId postDepartmentId wishList")
+        .populate("tuitionInfos.divisionId")
+        .populate("tuitionInfos.districtId")
+        .populate("tuitionInfos.subDistrictId")
+        .populate("tuitionInfos.areaIds")
+        .populate("tuitionInfos.classId")
+        .populate("tuitionInfos.subjectIds");
     const [client] = clients
 
     const clientUpdated = client.toObject();
