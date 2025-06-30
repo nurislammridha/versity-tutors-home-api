@@ -19,7 +19,14 @@ const createClient = async (req, res) => {
         let otpObj = await OtpEmail.findOne({ email }) || {}
         // if (otp === otpObj?.otp) { //change after real otp
         if (otp === "123456") {
-            let clientInfo = new Client({ firstName, lastName, email, phone, password, isPassword: true, isTutorAccount });
+            // Count current clients of the same type
+            const count = await Client.countDocuments({ isTutorAccount });
+
+            // Generate custom client ID
+            const prefix = isTutorAccount ? 'T-' : 'S-';
+            const numberPart = String(count + 1).padStart(6, '0'); // e.g., 0001
+            const clientId = prefix + numberPart;
+            let clientInfo = new Client({ firstName, lastName, email, phone, password, isPassword: true, isTutorAccount, clientId });
 
             // Hash password before saving in database
             bcrypt.genSalt(10, (err, salt) => {
@@ -497,7 +504,11 @@ const allClientById = async (req, res) => {
         .populate("tuitionInfos.subDistrictId")
         .populate("tuitionInfos.areaIds")
         .populate("tuitionInfos.classId")
-        .populate("tuitionInfos.subjectIds");
+        .populate("tuitionInfos.subjectIds")
+        .populate("tuitionInfos.instituteTypeId")
+        .populate("tuitionInfos.instituteNameId")
+        .populate("tuitionInfos.studyTypeId")
+        .populate("tuitionInfos.departmentNameId")
     const [client] = clients
 
     const clientUpdated = client.toObject();

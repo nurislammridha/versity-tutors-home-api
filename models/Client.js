@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const ClientSchema = new mongoose.Schema({
+    clientId: { type: String, unique: true },
     firstName: {
         type: String,
         required: true,
@@ -257,7 +258,7 @@ const ClientSchema = new mongoose.Schema({
     //new education info END
     //new tuition info START
 
-    //new tuition info END
+
     tuitionInfos: [{
         divisionId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'Division' },
         districtId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'District' },
@@ -284,8 +285,19 @@ const ClientSchema = new mongoose.Schema({
         isTakeDemoClass: { type: Boolean, required: false, default: true },
         demoClass: { type: String, required: false },
         demoClassStyle: { type: String, required: false },
-        demoClassPricing: { type: String, required: false }
+        demoClassPricing: { type: String, required: false },
+        //for student extra added
+        instituteTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteType' },
+        instituteNameId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'InstituteName' },
+        studyTypeId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'StudyType' },
+        departmentNameId: { type: mongoose.Schema.Types.ObjectId, required: false, ref: 'DepartmentName' },
+        teacherReligion: { type: String, required: false },
+        expectedSalaryOnline: { type: String, required: false },
+        expectedSalaryOnlineLabel: { type: String, required: false },
+        expectedSalaryOffline: { type: String, required: false },
+        expectedSalaryOfflineLabel: { type: String, required: false },
     }],
+    //new tuition info END
     unlockInfo: [
         {
             type: String,
