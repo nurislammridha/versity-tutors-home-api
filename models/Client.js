@@ -464,7 +464,7 @@ const ClientSchema = new mongoose.Schema({
     reviewStatus: {
         type: String, // e.g., 'created','requestToApprove', 'under_review', 'approved', 'rejected'
         default: 'created',
-        enum: ['created', 'requestInitiated', 'underReview', 'approved', 'rejected', 'sendForReview', 'receiveForReview'],
+        enum: ['created', 'requestInitiated', 'underReview', 'approved', 'rejected', 'sendForReview', 'receiveForReview', 'requestToUpdate'],
     },
     comment: {//reviewComment
         type: String,
